@@ -2,15 +2,10 @@
  
 - 使用 `Vue3`、`Typescript`、`Pinia`、`Vite` 等前端前沿技术
  
- 
- 
-## 文档
-
-[v1文档地址](https://naive-ui-admin-docs.vercel.app)
-
+  
 ## 准备
 
-- [node](http://nodejs.org/) 和 [git](https://git-scm.com/) -项目开发环境
+- [node](http://nodejs.org/) 和 [git](https://git-scm.com/) -项目开发环境 node版本 >=14
 - [Vite](https://vitejs.dev/) - 熟悉 vite 特性
 - [Vue3](https://v3.vuejs.org/) - 熟悉 Vue 基础语法
 - [TypeScript](https://www.typescriptlang.org/) - 熟悉`TypeScript`基本语法
