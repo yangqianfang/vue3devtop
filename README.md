@@ -18,20 +18,18 @@
 - [Vue-Router-Next](https://next.router.vuejs.org/) - 熟悉 vue-router 基本使用
 - [Mock.js](https://github.com/nuysoft/Mock) - mockjs 基本语法
 
-## 使用
-
-npm install --global yarn
+## 使用 
 
 - 安装yarn
 
 ```bash
 npm install -g yarn
+```
 
 - 安装依赖
 
 ```bash
 yarn install
-
 ```
 
 - 运行
