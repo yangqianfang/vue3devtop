@@ -23,7 +23,7 @@
 - 安装yarn
 
 ```bash
-npm install -g yarn
+npm install yarn -g
 ```
 
 - 安装依赖
