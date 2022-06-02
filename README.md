@@ -20,6 +20,13 @@
 
 ## 使用
 
+npm install --global yarn
+
+- 安装yarn
+
+```bash
+npm install -g yarn
+
 - 安装依赖
 
 ```bash
