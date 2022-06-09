@@ -8,7 +8,7 @@ const tableList = (pageSize) => {
       id: '@integer(10,999999)',
       beginTime: '@datetime',
       endTime: '@datetime',
-      'list|3': [
+      list: [
         {
           label: '1.0.1',
           value: '1.0.1',
@@ -50,7 +50,7 @@ export default [
       return resultSuccess({
         page: Number(page),
         pageSize: Number(pageSize),
-        pageCount: 60,
+        pageCount: 10,
         list,
       });
     },

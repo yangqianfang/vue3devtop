@@ -7,3 +7,10 @@ export function getConsoleInfo() {
     method: 'get',
   });
 }
+//获取主控台信息
+export function getConsoleList() {
+  return http.request({
+    url: '/dashboard/list',
+    method: 'get',
+  });
+}

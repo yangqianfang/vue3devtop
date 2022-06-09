@@ -21,6 +21,7 @@ const routes: Array<RouteRecordRaw> = [
     redirect: '/list/basic-list',
     component: Layout,
     meta: {
+      hidden: true,
       title: '列表页面',
       icon: renderIcon(TableOutlined),
       sort: 2,
