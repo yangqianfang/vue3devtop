@@ -1,5 +1,5 @@
 import { Random } from 'mockjs';
-import { resultSuccess, doCustomTimes } from '../_util';
+import { resultSuccess, doCustomTimes, resultError } from '../_util';
 
 const consoleInfo = {
   //访问量
@@ -30,11 +30,12 @@ const consoleInfo = {
     amount: Random.float(99999, 999999, 2, 2),
   },
 };
+
 const tableList = (pageSize) => {
   const result: any[] = [];
   doCustomTimes(pageSize, () => {
     result.push({
-      id: '@integer(10,999999)',
+      appid: '@integer(10,999999)',
       updateTime: '@datetime',
       list: [
         {
@@ -54,10 +55,10 @@ const tableList = (pageSize) => {
           value: '1.30.2',
         },
       ],
-      'name|1': ['运营平台WEB	', '运维H5	', '销售H5	', '停车场web	'],
+      'appname|1': ['运营平台WEB	', '运维H5	', '销售H5	', '停车场web	'],
       'gitname|1': ['manage-web		', 'operation	', 'distribution	', 'app-web	'],
       'group|1': ['web', 'app	'],
-      'version|1': ['1.0.1', '1.20.99', '1.40.59'],
+      'currversion|1': ['1.0.1', '1.20.99', '1.40.59'],
     });
   });
   return result;
@@ -87,6 +88,15 @@ export default [
         pageCount: 10,
         list,
       });
+    },
+  },
+  //发布版本
+  {
+    url: '/api/publish/operation',
+    timeout: 1000,
+    method: 'post',
+    response: () => {
+      return resultSuccess({});
     },
   },
 ];

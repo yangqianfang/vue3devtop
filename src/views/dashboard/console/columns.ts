@@ -5,7 +5,7 @@ import CurTag from './components/CurTag.vue';
 export const columns = [
   {
     title: '服务名称',
-    key: 'name',
+    key: 'appname',
     align: 'center',
     width: 120,
   },
@@ -36,12 +36,12 @@ export const columns = [
   },
   {
     title: '当前版本	',
-    key: 'version',
+    key: 'currversion',
     align: 'center',
     width: 120,
     render(row) {
       console.log(row);
-      return h(CurTag, { title: row.version });
+      return h(CurTag, { title: row.currversion });
     },
   },
   // {
@@ -59,12 +59,13 @@ export const columns = [
     align: 'center',
     width: 160,
     render(row) {
+      row.selectVersion = row.currversion;
       return h(NSelect, {
         options: row.list,
         style: 'width:120px',
-        'default-value': row.version,
+        'default-value': row.currversion,
         'on-update:value'(v) {
-          row.select = v;
+          row.selectVersion = v;
         },
       });
     },

@@ -220,7 +220,6 @@
 <script lang="ts" setup>
   import { ref, onMounted, h, reactive } from 'vue';
   import { getConsoleInfo } from '@/api/dashboard/console';
-
   import { CountTo } from '@/components/CountTo/index';
   import {
     CaretUpOutlined,
@@ -231,7 +230,12 @@
   import { useMessage } from 'naive-ui';
   import { BasicTable, TableAction } from '@/components/Table';
   // import { BasicForm, useForm } from '@/components/Form/index';
-  import { getConsoleList } from '@/api/dashboard/console';
+  import {
+    getConsoleList,
+    publishUpgrade,
+    publishFinish,
+    publishRollback,
+  } from '@/api/dashboard/console';
   import { columns } from './columns';
   import { useRouter } from 'vue-router';
 
@@ -240,6 +244,7 @@
   const saleroom = ref<any>({});
   const orderLarge = ref<any>({});
   const volume = ref({});
+  const $Loading = window['$Loading'].value;
 
   onMounted(async () => {
     const data = await getConsoleInfo();
@@ -252,7 +257,6 @@
 
   const message = useMessage();
   const actionRef = ref();
-
   const formParams = reactive({
     name: '',
     address: '',
@@ -318,23 +322,44 @@
     actionRef.value.reload();
   }
 
-  function handleSubmit(record: Recordable) {
-    let selectV = record.select || record.list[0].value;
-
-    console.log('点击了发布', selectV);
-    message.info('点击了发布');
-  }
-
-  function handleDone(values: Recordable) {
-    console.log(values);
-    message.info('点击了完成');
+  const handleSubmit = async (record: Recordable) => {
+    let selectVersion = record.selectVersion || record.list[0].value;
+    let { appid, currversion, appname } = record;
+    if (!selectVersion) {
+      message.warning('版本号不正确！');
+      return;
+    }
+    if (selectVersion === currversion) {
+      let msg = `服务[${appname}]版本号${currversion}已经上线！`;
+      message.warning(msg);
+      return;
+    }
+    $Loading.show();
+    await publishUpgrade({ id: appid, appname: appname, version: selectVersion });
+    message.success(`服务[${appname}]版本号${selectVersion} 发布成功`);
+    $Loading.hide();
     reloadTable();
-  }
+  };
 
-  function handleRolledback(values: Recordable) {
-    console.log(values);
-    message.info('点击了回滚');
-  }
+  // 完成按钮
+  const handleDone = async (record: Recordable) => {
+    let { appid, appname } = record;
+    $Loading.show();
+    await publishFinish({ id: appid, appname: appname });
+    message.success(`服务[${appname}]完成升级!`);
+    reloadTable();
+    $Loading.hide();
+  };
+
+  // 回滚按钮
+  const handleRolledback = async (record: Recordable) => {
+    let { appid, appname } = record;
+    $Loading.show();
+    await publishRollback({ id: appid, appname: appname });
+    message.success(`服务[${appname}]回滚成功!`);
+    reloadTable();
+    $Loading.hide();
+  };
 </script>
 
 <style lang="less" scoped>

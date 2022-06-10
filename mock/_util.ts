@@ -1,6 +1,6 @@
 import Mock from 'mockjs';
 
-export function resultSuccess(result, { message = 'ok' } = {}) {
+export function resultSuccess(result, { message = 'success' } = {}) {
   return Mock.mock({
     code: 200,
     result,
@@ -13,7 +13,7 @@ export function resultPageSuccess<T = any>(
   page: number,
   pageSize: number,
   list: T[],
-  { message = 'ok' } = {}
+  { message = 'success' } = {}
 ) {
   const pageData = pagination(page, pageSize, list);
 
