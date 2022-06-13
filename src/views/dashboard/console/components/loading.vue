@@ -1,5 +1,5 @@
 <template>
-  <div ref="Loading" class="loading-wrap" v-if="isShow">
+  <div ref="Loading" class="loading-wrap">
     <n-spin size="medium" />
   </div>
 </template>

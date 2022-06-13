@@ -244,7 +244,7 @@
   const saleroom = ref<any>({});
   const orderLarge = ref<any>({});
   const volume = ref({});
-  const $Loading = window['$Loading'].value;
+  const $Loading = window['$Loading'];
 
   onMounted(async () => {
     const data = await getConsoleInfo();
@@ -334,31 +334,31 @@
       message.warning(msg);
       return;
     }
-    $Loading.show();
+    $Loading.value.show();
     await publishUpgrade({ id: appid, appname: appname, version: selectVersion });
     message.success(`服务[${appname}]版本号${selectVersion} 发布成功`);
-    $Loading.hide();
+    $Loading.value.hide();
     reloadTable();
   };
 
   // 完成按钮
   const handleDone = async (record: Recordable) => {
     let { appid, appname } = record;
-    $Loading.show();
+    $Loading.value.show();
     await publishFinish({ id: appid, appname: appname });
     message.success(`服务[${appname}]完成升级!`);
+    $Loading.value.hide();
     reloadTable();
-    $Loading.hide();
   };
 
   // 回滚按钮
   const handleRolledback = async (record: Recordable) => {
     let { appid, appname } = record;
-    $Loading.show();
+    $Loading.value.show();
     await publishRollback({ id: appid, appname: appname });
     message.success(`服务[${appname}]回滚成功!`);
+    $Loading.value.hide();
     reloadTable();
-    $Loading.hide();
   };
 </script>
 

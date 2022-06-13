@@ -19,7 +19,6 @@
   import { computed, onMounted, onUnmounted, ref } from 'vue';
   import { zhCN, dateZhCN, darkTheme } from 'naive-ui';
   // import { LockScreen } from '@/components/Lockscreen';
-  import { Loading } from '@/components/Loading';
   import { AppProvider } from '@/components/Application';
   import { useLockscreenStore } from '@/store/modules/lockscreen';
   import { useRoute } from 'vue-router';
