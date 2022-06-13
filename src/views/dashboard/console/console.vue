@@ -199,6 +199,7 @@
           :columns="columns"
           :request="loadDataTable"
           :row-key="(row) => row.id"
+          :pagination="false"
           ref="actionRef"
           :actionColumn="actionColumn"
           @update:checked-row-keys="onCheckedRow"
@@ -227,7 +228,7 @@
     UnorderedListOutlined,
     PlusOutlined,
   } from '@vicons/antd';
-  import { useMessage } from 'naive-ui';
+  import { useMessage, useDialog } from 'naive-ui';
   import { BasicTable, TableAction } from '@/components/Table';
   // import { BasicForm, useForm } from '@/components/Form/index';
   import {
@@ -245,7 +246,7 @@
   const orderLarge = ref<any>({});
   const volume = ref({});
   const $Loading = window['$Loading'];
-
+  const dialog = useDialog();
   onMounted(async () => {
     const data = await getConsoleInfo();
     visits.value = data.visits;
@@ -351,14 +352,28 @@
     reloadTable();
   };
 
+  // 请求回滚
+  async function dopublishRollback(data) {
+    $Loading.value.show();
+    await publishRollback(data);
+    message.success(`服务[${data.appname}]回滚成功!`);
+    $Loading.value.hide();
+    reloadTable();
+  }
+
   // 回滚按钮
   const handleRolledback = async (record: Recordable) => {
     let { appid, appname } = record;
-    $Loading.value.show();
-    await publishRollback({ id: appid, appname: appname });
-    message.success(`服务[${appname}]回滚成功!`);
-    $Loading.value.hide();
-    reloadTable();
+    dialog.info({
+      title: '提示',
+      content: `确定要回滚${appname}吗？`,
+      positiveText: '确定',
+      negativeText: '取消',
+      onPositiveClick: () => {
+        dopublishRollback({ id: appid, appname: appname });
+      },
+      onNegativeClick: () => {},
+    });
   };
 </script>
 
