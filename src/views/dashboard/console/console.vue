@@ -193,6 +193,8 @@
         </NCard>
       </n-grid-item>
     </n-grid> -->
+    <!--访问量 | 流量趋势-->
+    <!-- <VisiTab /> -->
     <div class="mt-4">
       <n-card :bordered="false" class="proCard">
         <BasicTable
@@ -221,6 +223,7 @@
 <script lang="ts" setup>
   import { ref, onMounted, h, reactive } from 'vue';
   import { getConsoleInfo } from '@/api/dashboard/console';
+  // import VisiTab from './components/VisiTab.vue';
   import { CountTo } from '@/components/CountTo/index';
   import {
     CaretUpOutlined,
