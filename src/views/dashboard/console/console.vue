@@ -194,7 +194,8 @@
       </n-grid-item>
     </n-grid> -->
     <!--访问量 | 流量趋势-->
-    <!-- <VisiTab /> -->
+    <!-- <button @click="chartData = 333">改变chartData</button> -->
+    <VisiTab :chartData="chartData" />
     <div class="mt-4">
       <n-card :bordered="false" class="proCard">
         <BasicTable
@@ -212,7 +213,7 @@
               <n-icon size="18">
                 <UnorderedListOutlined />
               </n-icon>
-              服务列表
+              服务列表 <button @click="loadChartData">加载图表数据</button>
             </div>
           </template>
         </BasicTable>
@@ -223,7 +224,7 @@
 <script lang="ts" setup>
   import { ref, onMounted, h, reactive } from 'vue';
   import { getConsoleInfo } from '@/api/dashboard/console';
-  // import VisiTab from './components/VisiTab.vue';
+  import VisiTab from './components/VisiTab.vue';
   import { CountTo } from '@/components/CountTo/index';
   import {
     CaretUpOutlined,
@@ -239,6 +240,7 @@
     publishUpgrade,
     publishFinish,
     publishRollback,
+    getChartData,
   } from '@/api/dashboard/console';
   import { columns } from './columns';
   import { useRouter } from 'vue-router';
@@ -250,9 +252,18 @@
   const volume = ref({});
   const $Loading = window['$Loading'];
   const dialog = useDialog();
+  const chartData = ref<any>({});
+
   onMounted(async () => {
+    // loadChartData();
     const data = await getConsoleInfo();
+    const cData = await getChartData();
+    chartData.value = cData;
+    console.log('cData');
+    console.log(chartData.value);
     visits.value = data.visits;
+    console.log('visits.value');
+    console.log(visits.value);
     saleroom.value = data.saleroom;
     orderLarge.value = data.orderLarge;
     volume.value = data.volume;
@@ -314,10 +325,14 @@
   });
 
   const loadDataTable = async (res) => {
-    let list = await getConsoleList({ ...formParams, ...params.value, ...res });
-    return list;
+    return await getConsoleList({ ...formParams, ...params.value, ...res });
   };
 
+  // const loadChartData = async () => {
+  //   return await getChartData();
+  // };
+
+  // loadChartData();
   function onCheckedRow(rowKeys) {
     console.log(rowKeys);
   }

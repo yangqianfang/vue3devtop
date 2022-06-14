@@ -1,4 +1,5 @@
 import { PropType } from 'vue';
+import { object } from 'vue-types';
 
 export interface BasicProps {
   width: string;
@@ -13,5 +14,9 @@ export const basicProps = {
   height: {
     type: String as PropType<string>,
     default: '280px',
+  },
+  data: {
+    type: Object,
+    default: {},
   },
 };

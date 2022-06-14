@@ -90,6 +90,18 @@ export default [
       });
     },
   },
+  //图片表数据
+  {
+    url: '/api/publish/getChartData',
+    timeout: 1000,
+    method: 'get',
+    response: () => {
+      return resultSuccess({
+        x: ['1', '10001', '200', '10002', '90005', '10012', '90006'],
+        series: ['3958', '2893', '1146', '450', '258', '166', '56'],
+      });
+    },
+  },
   //发布版本
   {
     url: '/api/publish/operation',

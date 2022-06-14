@@ -8,6 +8,13 @@ export function getConsoleInfo() {
   });
 }
 //获取主控list
+export function getChartData() {
+  return http.request({
+    url: '/publish/getChartData',
+    method: 'get',
+  });
+}
+//获取主控list
 export function getConsoleList() {
   return http.request({
     url: '/dashboard/list',

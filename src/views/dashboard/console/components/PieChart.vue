@@ -17,30 +17,34 @@
       });
       const showChart = (data) => {
         setOptions({
+          title: {
+            text: 'API状态响应码',
+            subtext: 'ES FROM NGINX',
+            left: 'center',
+          },
           tooltip: {
-            trigger: 'axis',
-            axisPointer: {
-              lineStyle: {
-                width: 1,
-                color: '#019680',
-              },
-            },
+            trigger: 'item',
+            formatter: '{a} <br/>{b} : {c} ({d}%)',
           },
-          grid: { left: '1%', right: '1%', top: '2  %', bottom: 0, containLabel: true },
-          xAxis: {
-            type: 'category',
-            data: data.x,
-          },
-          yAxis: {
-            type: 'value',
-            max: 8000,
-            splitNumber: 4,
+          legend: {
+            orient: 'vertical',
+            left: 'left',
           },
           series: [
             {
-              data: data.series,
-              type: 'bar',
+              name: '访问来源',
+              radius: '65%',
+              center: ['50%', '55%'],
+              data: data,
+              type: 'pie',
               barMaxWidth: 80,
+              emphasis: {
+                itemStyle: {
+                  shadowBlur: 20,
+                  shadowOffsetX: 5,
+                  shadowColor: 'rgba(0, 0, 0, 0.5)',
+                },
+              },
             },
           ],
         });
