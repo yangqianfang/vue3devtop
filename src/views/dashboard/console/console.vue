@@ -213,7 +213,7 @@
               <n-icon size="18">
                 <UnorderedListOutlined />
               </n-icon>
-              服务列表 <button @click="loadChartData">加载图表数据</button>
+              服务列表
             </div>
           </template>
         </BasicTable>

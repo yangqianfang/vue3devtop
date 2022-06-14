@@ -7,7 +7,7 @@
             <n-tab-pane name="访问量">
               <VisitAmount :data="chartData" />
             </n-tab-pane>
-            <n-tab-pane name="流量趋势">
+            <n-tab-pane name="API状态响应码">
               <PieChart :data="pieData" />
             </n-tab-pane>
           </n-tabs>
