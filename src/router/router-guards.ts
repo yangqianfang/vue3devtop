@@ -58,10 +58,10 @@ export function createRouterGuards(router: Router) {
 
     /*
       20220615 
-      暂时不过滤用户菜单路由权限,先注释
+      暂时不过滤用户菜单路由权限,先 注释
      */
-    // const userInfo = await userStore.GetInfo();
-    const userInfo = []; // 打开注释可从后台获取用户菜单权限
+    const userInfo = await userStore.GetInfo();
+    // const userInfo = []; // 可从后台获取用户菜单权限
 
     const routes = await asyncRouteStore.generateRoutes(userInfo);
 

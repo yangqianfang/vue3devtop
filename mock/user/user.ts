@@ -14,10 +14,10 @@ const adminInfo = {
   password: Random.string('upper', 4, 16),
   token,
   permissions: [
-    {
-      label: '主控台',
-      value: 'dashboard_console',
-    },
+    // {
+    //   label: '主控台',
+    //   value: 'dashboard_console',
+    // },
     // {
     //   label: '监控页',
     //   value: 'dashboard_monitor',
