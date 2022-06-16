@@ -57,31 +57,11 @@
 
 <script lang="ts" setup>
   import { ref, unref, reactive, onMounted, watchEffect } from 'vue';
-  import { useMessage } from 'naive-ui';
-  import { BasicUpload } from '@/components/Upload';
-  import { useGlobSetting } from '@/hooks/setting';
   import { getAppList, crontabLogList, downLoadLog } from '@/api/log/crontab';
-  const globSetting = useGlobSetting();
-
-  // const logList = ref<any>([]);
-  const logList = [
-    {
-      label: 'manage',
-      value: 'manage',
-    },
-    {
-      label: 'opserver',
-      value: 'opserver',
-    },
-    {
-      label: 'wechat',
-      value: 'wechat',
-    },
-  ];
+  const logList = ref<any>([]);
   const rules = {
     appname: {
       required: true,
-
       message: '请选择服务名称',
       trigger: 'change',
     },
@@ -100,7 +80,6 @@
 
     filename: {
       required: true,
-      type: 'number',
       message: '请选择日志文件',
       trigger: 'change',
     },
@@ -116,7 +95,6 @@
   });
 
   const formRef: any = ref(null);
-  const message = useMessage();
 
   const defaultValueRef = () => ({
     appname: null,
@@ -133,19 +111,21 @@
     }
   });
 
+  /*
+  获取日志list 
+   */
   const getLogsList = async () => {
     const loglist = await crontabLogList({ appname: formValue.appname });
-
-    // logList.value = loglist;
-    // console.log(logList);
+    logList.value = loglist;
   };
 
   function formSubmit() {
-    formRef.value.validate((errors) => {
+    formRef.value.validate(async (errors) => {
       if (!errors) {
-        message.success('验证成功');
-      } else {
-        message.error('验证失败，请填写完整信息');
+        const { appname, filename, start, end } = formValue;
+        const subdata = { appname: appname, filename: filename, start: start, end: end };
+        const data = await downLoadLog(subdata);
+        window.location.href = data;
       }
     });
   }

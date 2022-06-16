@@ -49,15 +49,9 @@ export default [
     timeout: 1000,
     method: 'post',
     response: ({ query }) => {
-      return resultSuccess(logList);
-      // const { page = 1, pageSize = 10 } = query;
-      // const list = tableList(Number(pageSize));
-      // return resultSuccess({
-      //   page: Number(page),
-      //   pageSize: Number(pageSize),
-      //   pageCount: 10,
-      //   list,
-      // });
+      return resultSuccess(
+        'http://docker.ifengniao.net:9090/static/download/app_20220616142449.zip'
+      );
     },
   },
   //log list
