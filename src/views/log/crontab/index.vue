@@ -47,7 +47,9 @@
 
             <div style="margin-left: 80px">
               <n-space>
-                <n-button type="primary" @click="formSubmit">下载日志</n-button>
+                <n-button type="primary" @click="formSubmit" :loading="downLoadloading"
+                  >下载日志</n-button
+                >
               </n-space>
             </div>
           </n-form>
@@ -62,6 +64,7 @@
   import { getAppList, crontabLogList, downLoadLog } from '@/api/log/crontab';
   const logList = ref<any>([]);
   const loading = ref(false);
+  const downLoadloading = ref(false);
   const formRef: any = ref(null);
   const rules = {
     appname: {
@@ -131,8 +134,14 @@
       if (!errors) {
         const { appname, filename, start, end } = formValue;
         const subdata = { appname: appname, filename: filename, start: start, end: end };
-        const data = await downLoadLog(subdata);
-        window.location.href = data;
+        downLoadloading.value = true;
+        try {
+          const data = await downLoadLog(subdata);
+          downLoadloading.value = false;
+          window.location.href = data;
+        } catch (error) {
+          downLoadloading.value = false;
+        }
       }
     });
   }
