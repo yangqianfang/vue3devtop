@@ -37,8 +37,10 @@
               <n-select
                 placeholder="请选择日志文件"
                 :options="logList"
+                filterable
                 label-field="name"
                 value-field="number"
+                :loading="loading"
                 v-model:value="formValue.filename"
               />
             </n-form-item>
@@ -59,6 +61,8 @@
   import { ref, unref, reactive, onMounted, watchEffect } from 'vue';
   import { getAppList, crontabLogList, downLoadLog } from '@/api/log/crontab';
   const logList = ref<any>([]);
+  const loading = ref(false);
+  const formRef: any = ref(null);
   const rules = {
     appname: {
       required: true,
@@ -89,13 +93,6 @@
     list: [],
   });
 
-  onMounted(async () => {
-    const applist = await getAppList();
-    appList.list = applist;
-  });
-
-  const formRef: any = ref(null);
-
   const defaultValueRef = () => ({
     appname: null,
     filename: null,
@@ -104,19 +101,29 @@
   });
 
   let formValue = reactive(defaultValueRef());
+
+  onMounted(async () => {
+    const applist = await getAppList();
+    appList.list = applist;
+  });
+
   watchEffect(() => {
     const appname = formValue.appname;
     if (appname) {
       getLogsList();
+    } else {
+      logList.value = [];
     }
   });
 
   /*
-  获取日志list 
-   */
+    获取日志list 
+  */
   const getLogsList = async () => {
+    loading.value = true;
     const loglist = await crontabLogList({ appname: formValue.appname });
     logList.value = loglist;
+    loading.value = false;
   };
 
   function formSubmit() {
@@ -130,8 +137,8 @@
     });
   }
 
-  function resetForm() {
+  /*   function resetForm() {
     formRef.value.restoreValidation();
     formValue = Object.assign(unref(formValue), defaultValueRef());
-  }
+  } */
 </script>

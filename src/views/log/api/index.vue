@@ -19,33 +19,28 @@
                 v-model:value="formValue.appname"
               />
             </n-form-item>
-            <n-form-item label="开始行数" path="start">
+            <n-form-item label="Before" path="start">
               <n-input-number
                 :show-button="true"
                 v-model:value="formValue.start"
                 placeholder="输入开始行数"
               />
             </n-form-item>
-            <n-form-item label="结束行数	" path="end">
+            <n-form-item label="After	" path="end">
               <n-input-number
                 :show-button="true"
                 placeholder="输入结束行数"
                 v-model:value="formValue.end"
               />
             </n-form-item>
-            <n-form-item label="日志文件" path="filename">
-              <n-select
-                placeholder="请选择日志文件"
-                :options="logList"
-                label-field="name"
-                value-field="number"
-                v-model:value="formValue.filename"
-              />
+            <n-form-item label="关键词" path="filename">
+              <n-input v-model:value="formValue.filename" type="text" placeholder="关键词" />
             </n-form-item>
 
             <div style="margin-left: 80px">
               <n-space>
-                <n-button type="primary" @click="formSubmit">下载日志</n-button>
+                <n-button type="success" @click="formSubmit">拉取日志</n-button>
+                <n-button type="primary" @click="formSubmit">生产日志</n-button>
               </n-space>
             </div>
           </n-form>
@@ -59,6 +54,7 @@
   import { ref, unref, reactive, onMounted, watchEffect } from 'vue';
   import { getAppList, crontabLogList, downLoadLog } from '@/api/log/crontab';
   const logList = ref<any>([]);
+  const formRef: any = ref(null);
   const rules = {
     appname: {
       required: true,
@@ -89,13 +85,6 @@
     list: [],
   });
 
-  onMounted(async () => {
-    const applist = await getAppList();
-    appList.list = applist;
-  });
-
-  const formRef: any = ref(null);
-
   const defaultValueRef = () => ({
     appname: null,
     filename: null,
@@ -104,16 +93,24 @@
   });
 
   let formValue = reactive(defaultValueRef());
+
+  onMounted(async () => {
+    const applist = await getAppList();
+    appList.list = applist;
+  });
+
   watchEffect(() => {
     const appname = formValue.appname;
     if (appname) {
       getLogsList();
+    } else {
+      logList.value = [];
     }
   });
 
   /*
-  获取日志list 
-   */
+    获取日志list 
+  */
   const getLogsList = async () => {
     const loglist = await crontabLogList({ appname: formValue.appname });
     logList.value = loglist;
@@ -130,8 +127,8 @@
     });
   }
 
-  function resetForm() {
+  /*   function resetForm() {
     formRef.value.restoreValidation();
     formValue = Object.assign(unref(formValue), defaultValueRef());
-  }
+  } */
 </script>
