@@ -16,31 +16,36 @@
                 clearable
                 placeholder="请选择服务名称"
                 :options="appList.list"
+                @update:value="handleUpdateValue"
                 v-model:value="formValue.appname"
               />
             </n-form-item>
-            <n-form-item label="Before" path="start">
+            <n-form-item label="Before" path="before">
               <n-input-number
                 :show-button="true"
-                v-model:value="formValue.start"
+                v-model:value="formValue.before"
                 placeholder="输入开始行数"
               />
             </n-form-item>
-            <n-form-item label="After	" path="end">
+            <n-form-item label="After	" path="after">
               <n-input-number
                 :show-button="true"
                 placeholder="输入结束行数"
-                v-model:value="formValue.end"
+                v-model:value="formValue.after"
               />
             </n-form-item>
-            <n-form-item label="关键词" path="filename">
-              <n-input v-model:value="formValue.filename" type="text" placeholder="关键词" />
+            <n-form-item label="关键词" path="keyword">
+              <n-input v-model:value="formValue.keyword" type="text" placeholder="关键词" />
             </n-form-item>
 
             <div style="margin-left: 80px">
               <n-space>
-                <n-button type="success" @click="formSubmit">拉取日志</n-button>
-                <n-button type="primary" @click="formSubmit">生产日志</n-button>
+                <n-button type="success" @click="apiPullLog" :loading="pullLoading"
+                  >拉取日志</n-button
+                >
+                <n-button type="primary" @click="formSubmit" :loading="downloadLoading"
+                  >生成日志</n-button
+                >
               </n-space>
             </div>
           </n-form>
@@ -52,32 +57,34 @@
 
 <script lang="ts" setup>
   import { ref, unref, reactive, onMounted, watchEffect } from 'vue';
-  import { getAppList, crontabLogList, downLoadLog } from '@/api/log/crontab';
-  const logList = ref<any>([]);
+  import { useMessage, SelectOption } from 'naive-ui';
+  import { getAppList, apiPullLogs, downLoadLog } from '@/api/log/apilog';
+  const pullLoading = ref(false);
+  const downloadLoading = ref(false);
   const formRef: any = ref(null);
+  const message = useMessage();
   const rules = {
     appname: {
       required: true,
       message: '请选择服务名称',
       trigger: 'change',
     },
-    start: {
+    before: {
       required: true,
       type: 'number',
       message: '请输入开始行数字',
       trigger: ['blur', 'input'],
     },
-    end: {
+    after: {
       required: true,
       type: 'number',
       message: '请输入结束换行数字',
       trigger: ['blur', 'input'],
     },
 
-    filename: {
-      required: true,
-      message: '请选择日志文件',
-      trigger: 'change',
+    keyword: {
+      message: '请输入关键词',
+      trigger: ['blur', 'input'],
     },
   };
 
@@ -87,42 +94,62 @@
 
   const defaultValueRef = () => ({
     appname: null,
-    filename: null,
-    start: 1,
-    end: 1000,
+    keyword: '',
+    before: 1,
+    apps: '',
+    after: 1000,
   });
+  const handleUpdateValue = (value: string, option: SelectOption) => {
+    console.log(option);
+    formValue.apps = option.pullapps;
+  };
 
   let formValue = reactive(defaultValueRef());
-
   onMounted(async () => {
     const applist = await getAppList();
     appList.list = applist;
   });
 
-  watchEffect(() => {
-    const appname = formValue.appname;
-    if (appname) {
-      getLogsList();
-    } else {
-      logList.value = [];
-    }
-  });
+  const apiPullLog = async () => {
+    formRef.value.validate(async (errors) => {
+      if (!errors) {
+        pullLoading.value = true;
+        const { appname, apps } = formValue;
 
-  /*
-    获取日志list 
-  */
-  const getLogsList = async () => {
-    const loglist = await crontabLogList({ appname: formValue.appname });
-    logList.value = loglist;
+        try {
+          await apiPullLogs({ appname, apps });
+          message.success(`服务[${appname}]日志操作成功！`);
+          pullLoading.value = false;
+        } catch (error) {
+          pullLoading.value = false;
+        }
+      }
+    });
   };
 
+  /* 
+    下载日志
+  */
   function formSubmit() {
     formRef.value.validate(async (errors) => {
       if (!errors) {
-        const { appname, filename, start, end } = formValue;
-        const subdata = { appname: appname, filename: filename, start: start, end: end };
-        const data = await downLoadLog(subdata);
-        window.location.href = data;
+        downloadLoading.value = true;
+        const { appname, before, after, keyword, apps } = formValue;
+
+        if (!keyword) {
+          message.error(`请输入关键词！`);
+          downloadLoading.value = false;
+          return;
+        }
+
+        const subdata = { appname, keyword, before, after, apps };
+        try {
+          const data = await downLoadLog(subdata);
+          window.location.href = data;
+          downloadLoading.value = false;
+        } catch (error) {
+          downloadLoading.value = false;
+        }
       }
     });
   }
