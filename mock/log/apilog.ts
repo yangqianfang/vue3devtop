@@ -45,7 +45,9 @@ export default [
     timeout: 1000,
     method: 'post',
     response: () => {
-      return resultError('http://docker.ifengniao.net:9090/static/download/app_20220616142449.zip');
+      return resultSuccess(
+        'http://docker.ifengniao.net:9090/static/download/app_20220616142449.zip'
+      );
     },
   },
 ];
