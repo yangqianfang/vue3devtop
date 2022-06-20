@@ -1,6 +1,6 @@
 ## 简介
  
-- 使用 `Vue3`、`Typescript`、`Pinia`、`Vite` 等前端前沿技术test
+- 使用 `Vue3`、`Typescript`、`Pinia`、`Vite` 等前端前沿技术
  
   
 ## 准备
