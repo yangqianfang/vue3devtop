@@ -4,6 +4,8 @@ import { store } from '@/store';
 import { ACCESS_TOKEN, CURRENT_USER, IS_LOCKSCREEN } from '@/store/mutation-types';
 import { ResultEnum } from '@/enums/httpEnum';
 
+import { randomString } from '@/utils/index';
+
 const Storage = createStorage({ storage: localStorage });
 import { getUserInfo, login, logout } from '@/api/system/user';
 import { storage } from '@/utils/Storage';
@@ -61,6 +63,10 @@ export const useUserStore = defineStore({
     async login(userInfo) {
       try {
         const response = await login(userInfo);
+        const ex = 7 * 24 * 60 * 60 * 1000;
+        const token = randomString(32);
+        this.setToken(token);
+        storage.set(ACCESS_TOKEN, token, ex);
         /*   const { result, code } = response;
         if (code === ResultEnum.SUCCESS) {
           const ex = 7 * 24 * 60 * 60 * 1000;
@@ -110,6 +116,7 @@ export const useUserStore = defineStore({
       return new Promise((resolve, reject) => {
         logout()
           .then((res) => {
+            storage.remove(ACCESS_TOKEN);
             resolve(res);
           })
           .catch((error) => {

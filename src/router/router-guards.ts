@@ -29,13 +29,11 @@ export function createRouterGuards(router: Router) {
       return;
     }
 
-    /* 
-     如果后台使用token
-     const token = storage.get(ACCESS_TOKEN); 
-     */
+    //  如果后台使用token
+    const token = storage.get(ACCESS_TOKEN);
 
     // 后台使用cookie
-    const token = document.cookie.indexOf(ACCESS_COOKIE) > -1 && document.cookie.length > 20;
+    // const token = document.cookie.indexOf(ACCESS_COOKIE) > -1 && document.cookie.length > 20;
 
     if (!token) {
       // You can access without permissions. You need to set the routing meta.ignoreAuth to true
