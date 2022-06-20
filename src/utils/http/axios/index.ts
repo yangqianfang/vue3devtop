@@ -6,7 +6,7 @@ import { checkStatus } from './checkStatus';
 import { joinTimestamp, formatRequestDate } from './helper';
 import { RequestEnum, ResultEnum, ContentTypeEnum } from '@/enums/httpEnum';
 import { PageEnum } from '@/enums/pageEnum';
-
+import qs from 'qs';
 import { useGlobSetting } from '@/hooks/setting';
 
 import { isString } from '@/utils/is/';
@@ -150,10 +150,10 @@ const transform: AxiosTransform = {
       if (!isString(params)) {
         formatDate && formatRequestDate(params);
         if (Reflect.has(config, 'data') && config.data && Object.keys(config.data).length > 0) {
-          config.data = data;
-          config.params = params;
+          config.data = qs.stringify(config.data);
+          config.params = qs.stringify(config.params);
         } else {
-          config.data = params;
+          config.data = qs.stringify(config.params);
           config.params = undefined;
         }
         if (joinParamsToUrl) {
@@ -239,7 +239,7 @@ function createAxios(opt?: Partial<CreateAxiosOptions>) {
         authenticationScheme: '',
         // 接口前缀
         prefixUrl: urlPrefix,
-        headers: { 'Content-Type': ContentTypeEnum.JSON },
+        headers: { 'Content-Type': ContentTypeEnum.FORM_URLENCODED },
         // 数据处理方式
         transform,
         // 配置项，下面的选项都可以在独立的接口请求中覆盖

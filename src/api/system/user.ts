@@ -28,9 +28,9 @@ export function getUserInfo() {
 export function login(params) {
   return http.request<BasicResponseModel>(
     {
-      url: '/login',
+      url: '/login/verify',
       method: 'POST',
-      params,
+      data: params,
     },
     {
       isTransformResponse: false,
@@ -57,10 +57,9 @@ export function changePassword(params, uid) {
 /**
  * @description: 用户登出
  */
-export function logout(params) {
+export function logout() {
   return http.request({
     url: '/login/logout',
     method: 'POST',
-    params,
   });
 }

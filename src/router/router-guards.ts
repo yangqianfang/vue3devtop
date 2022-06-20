@@ -2,7 +2,7 @@ import type { RouteRecordRaw } from 'vue-router';
 import { isNavigationFailure, Router } from 'vue-router';
 import { useUserStoreWidthOut } from '@/store/modules/user';
 import { useAsyncRouteStoreWidthOut } from '@/store/modules/asyncRoute';
-import { ACCESS_TOKEN } from '@/store/mutation-types';
+import { ACCESS_TOKEN, ACCESS_COOKIE } from '@/store/mutation-types';
 import { storage } from '@/utils/Storage';
 import { PageEnum } from '@/enums/pageEnum';
 import { ErrorPageRoute } from '@/router/base';
@@ -17,6 +17,7 @@ export function createRouterGuards(router: Router) {
   router.beforeEach(async (to, from, next) => {
     const Loading = window['$loading'] || null;
     Loading && Loading.start();
+
     if (from.path === LOGIN_PATH && to.name === 'errorPage') {
       next(PageEnum.BASE_HOME);
       return;
@@ -28,7 +29,13 @@ export function createRouterGuards(router: Router) {
       return;
     }
 
-    const token = storage.get(ACCESS_TOKEN);
+    /* 
+     如果后台使用token
+     const token = storage.get(ACCESS_TOKEN); 
+     */
+
+    // 后台使用cookie
+    const token = document.cookie.indexOf(ACCESS_COOKIE) > -1 && document.cookie.length > 20;
 
     if (!token) {
       // You can access without permissions. You need to set the routing meta.ignoreAuth to true

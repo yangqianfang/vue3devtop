@@ -5,7 +5,7 @@ import { ACCESS_TOKEN, CURRENT_USER, IS_LOCKSCREEN } from '@/store/mutation-type
 import { ResultEnum } from '@/enums/httpEnum';
 
 const Storage = createStorage({ storage: localStorage });
-import { getUserInfo, login } from '@/api/system/user';
+import { getUserInfo, login, logout } from '@/api/system/user';
 import { storage } from '@/utils/Storage';
 
 export interface IUserState {
@@ -61,7 +61,7 @@ export const useUserStore = defineStore({
     async login(userInfo) {
       try {
         const response = await login(userInfo);
-        const { result, code } = response;
+        /*   const { result, code } = response;
         if (code === ResultEnum.SUCCESS) {
           const ex = 7 * 24 * 60 * 60 * 1000;
           storage.set(ACCESS_TOKEN, result.token, ex);
@@ -69,7 +69,7 @@ export const useUserStore = defineStore({
           storage.set(IS_LOCKSCREEN, false);
           this.setToken(result.token);
           this.setUserInfo(result);
-        }
+        } */
         return Promise.resolve(response);
       } catch (e) {
         return Promise.reject(e);
@@ -102,11 +102,20 @@ export const useUserStore = defineStore({
 
     // 登出
     async logout() {
-      this.setPermissions([]);
+      /* this.setPermissions([]);
       this.setUserInfo('');
       storage.remove(ACCESS_TOKEN);
-      storage.remove(CURRENT_USER);
-      return Promise.resolve('');
+      storage.remove(CURRENT_USER); */
+      // return Promise.resolve('');
+      return new Promise((resolve, reject) => {
+        logout()
+          .then((res) => {
+            resolve(res);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
     },
   },
 });

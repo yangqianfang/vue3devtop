@@ -135,7 +135,7 @@
   import ProjectSetting from './ProjectSetting.vue';
   import { AsideMenu } from '@/layout/components/Menu';
   import { useProjectSetting } from '@/hooks/setting/useProjectSetting';
-
+  import { storage } from '@/utils/Storage';
   export default defineComponent({
     name: 'PageHeader',
     components: { ...components, NDialogProvider, ProjectSetting, AsideMenu },
@@ -236,6 +236,7 @@
             userStore.logout().then(() => {
               message.success('成功退出登录');
               // 移除标签页
+              storage.clearCookie();
               localStorage.removeItem(TABS_ROUTES);
               router
                 .replace({
