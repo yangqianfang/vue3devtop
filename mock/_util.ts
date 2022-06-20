@@ -1,9 +1,9 @@
 import Mock from 'mockjs';
 
-export function resultSuccess(result, { message = 'success' } = {}) {
+export function resultSuccess(data, { message = 'success' } = {}) {
   return Mock.mock({
     code: 200,
-    result,
+    data,
     message,
     type: 'success',
   });

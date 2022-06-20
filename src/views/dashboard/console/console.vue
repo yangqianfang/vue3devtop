@@ -200,7 +200,7 @@
       <n-card :bordered="false" class="proCard">
         <BasicTable
           :columns="columns"
-          :request="loadDataTable"
+          :dataSource="tableData"
           :row-key="(row) => row.id"
           :pagination="false"
           ref="actionRef"
@@ -253,17 +253,18 @@
   const $Loading = window['$Loading'];
   const dialog = useDialog();
   const chartData = ref<any>({});
-
+  const tableData = ref<any>([]);
   onMounted(async () => {
     // loadChartData();
     const data = await getConsoleInfo();
     const cData = await getChartData();
+    const tData = await loadDataTable();
+    tableData.value = tData.apps;
+    console.log(tData);
     chartData.value = cData;
-    console.log('cData');
-    console.log(chartData.value);
+
     visits.value = data.visits;
-    console.log('visits.value');
-    console.log(visits.value);
+
     saleroom.value = data.saleroom;
     orderLarge.value = data.orderLarge;
     volume.value = data.volume;
@@ -325,7 +326,8 @@
   });
 
   const loadDataTable = async (res) => {
-    return await getConsoleList({ ...formParams, ...params.value, ...res });
+    let list = await getConsoleList({ ...formParams, ...params.value, ...res });
+    return list;
   };
 
   // const loadChartData = async () => {

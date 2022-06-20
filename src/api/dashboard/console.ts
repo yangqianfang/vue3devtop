@@ -17,8 +17,8 @@ export function getChartData() {
 //获取主控list
 export function getConsoleList() {
   return http.request({
-    url: '/dashboard/list',
-    method: 'get',
+    url: '/publish/list',
+    method: 'post',
   });
 }
 

@@ -236,7 +236,6 @@
             userStore.logout().then(() => {
               message.success('成功退出登录');
               // 移除标签页
-              storage.clearCookie();
               localStorage.removeItem(TABS_ROUTES);
               router
                 .replace({

@@ -97,7 +97,7 @@ export const useUserStore = defineStore({
             } else {
               reject(new Error('getInfo: permissionsList must be a non-null array !'));
             } */
-            that.setAvatar(result.avatar);
+            // that.setAvatar(result.avatar);
             resolve(res);
           })
           .catch((error) => {

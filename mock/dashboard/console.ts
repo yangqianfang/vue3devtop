@@ -1,5 +1,5 @@
 import { Random } from 'mockjs';
-import { resultSuccess, doCustomTimes, resultError } from '../_util';
+import { resultSuccess, resultFNSuccess, doCustomTimes, resultError } from '../_util';
 
 const consoleInfo = {
   //访问量
@@ -78,7 +78,7 @@ export default [
   {
     url: '/api/dashboard/list',
     timeout: 1000,
-    method: 'get',
+    method: 'post',
     response: ({ query }) => {
       const { page = 1, pageSize = 10 } = query;
       const list = tableList(Number(pageSize));
