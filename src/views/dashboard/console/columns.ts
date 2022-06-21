@@ -67,6 +67,7 @@ export const columns = [
     render(row) {
       return h(NSelect, {
         options: row.list,
+        align: 'left',
         placeholder: row.version,
         style: 'width:120px',
         'default-value': row.selectVersion,
