@@ -70,7 +70,7 @@ export function useDataSource(
       const res = await request(params);
 
       const resultTotal = res[totalField] || 0;
-      const currentPage = res[pageField] || 1;
+      const currentPage = res[pageField];
 
       // 如果数据异常，需获取正确的页码再次执行
       if (resultTotal) {

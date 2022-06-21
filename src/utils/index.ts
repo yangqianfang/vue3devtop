@@ -220,3 +220,15 @@ export function randomString(length) {
   for (let i = length; i > 0; --i) result += str[Math.floor(Math.random() * str.length)];
   return result;
 }
+
+/* 
+  ["a","b"] =>[{label:a,value:a}]
+*/
+export function arrToSelectData(list) {
+  const llist = Array.from(new Set(list));
+  const newList: any = [];
+  llist.forEach((e) => {
+    newList.push({ label: e, value: e });
+  });
+  return newList;
+}

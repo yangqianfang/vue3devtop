@@ -92,6 +92,7 @@ const transform: AxiosTransform = {
     }
     // 接口请求错误，统一提示错误信息 这里逻辑可以根据项目进行修改
     let errorMsg = message;
+    const LoginPath = PageEnum.BASE_LOGIN;
     switch (code) {
       // 请求失败
       case ResultEnum.ERROR:
@@ -100,7 +101,6 @@ const transform: AxiosTransform = {
       // 登录超时
       case ResultEnum.TIMEOUT:
         const LoginName = PageEnum.BASE_LOGIN_NAME;
-        const LoginPath = PageEnum.BASE_LOGIN;
         if (router.currentRoute.value?.name === LoginName) return;
         // 到登录页
         errorMsg = '登录超时，请重新登录!';
@@ -153,7 +153,7 @@ const transform: AxiosTransform = {
           config.data = qs.stringify(config.data);
           config.params = qs.stringify(config.params);
         } else {
-          config.data = qs.stringify(config.params);
+          config.data = params;
           config.params = undefined;
         }
         if (joinParamsToUrl) {
@@ -235,7 +235,7 @@ function createAxios(opt?: Partial<CreateAxiosOptions>) {
   return new VAxios(
     deepMerge(
       {
-        timeout: 10 * 1000,
+        timeout: 30 * 1000,
         authenticationScheme: '',
         // 接口前缀
         prefixUrl: urlPrefix,

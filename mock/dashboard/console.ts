@@ -103,12 +103,12 @@ export default [
     },
   },
   //发布版本
-  {
+  /*  {
     url: '/api/publish/operation',
     timeout: 1000,
     method: 'post',
     response: () => {
       return resultSuccess({});
     },
-  },
+  }, */
 ];

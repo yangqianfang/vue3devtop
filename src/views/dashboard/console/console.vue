@@ -204,6 +204,7 @@
           :row-key="(row) => row.id"
           :pagination="false"
           ref="actionRef"
+          :reloadBt="loadDataTable"
           :actionColumn="actionColumn"
           @update:checked-row-keys="onCheckedRow"
           :scroll-x="1090"
@@ -245,7 +246,6 @@
   import { columns } from './columns';
   import { useRouter } from 'vue-router';
 
-  const loading = ref(true);
   const visits = ref<any>({});
   const saleroom = ref<any>({});
   const orderLarge = ref<any>({});
@@ -254,21 +254,27 @@
   const dialog = useDialog();
   const chartData = ref<any>({});
   const tableData = ref<any>([]);
+  const adminId = ref();
+  function addParams(data) {
+    data.forEach((element) => {
+      element.loading = false;
+      element.list = [];
+      element.selectVersion = element.version;
+    });
+    console.log(data);
+    return data;
+  }
+
   onMounted(async () => {
     // loadChartData();
-    const data = await getConsoleInfo();
-    const cData = await getChartData();
-    const tData = await loadDataTable();
-    tableData.value = tData.apps;
-    console.log(tData);
-    chartData.value = cData;
-
-    visits.value = data.visits;
-
-    saleroom.value = data.saleroom;
-    orderLarge.value = data.orderLarge;
-    volume.value = data.volume;
-    loading.value = false;
+    // const data = await getConsoleInfo();
+    //  visits.value = data.visits;
+    // aleroom.value = data.saleroom;
+    // orderLarge.value = data.orderLarge;
+    // volume.value = data.volume;
+    // const cData = await getChartData();
+    // chartData.value = cData;
+    loadDataTable();
   });
 
   const message = useMessage();
@@ -284,7 +290,7 @@
   });
 
   const actionColumn = reactive({
-    width: 220,
+    width: '320',
     title: '操作',
     key: 'action',
     fixed: 'right',
@@ -300,9 +306,7 @@
               handleSubmit(record);
             },
             // 根据业务控制是否显示 isShow 和 auth 是并且关系
-            ifShow: () => {
-              return true;
-            },
+
             // 根据权限控制是否显示: 有权限，会显示，支持多个
             // auth: ['basic_list'],
           },
@@ -320,14 +324,37 @@
               handleRolledback(record);
             },
           },
+          {
+            label: '编辑',
+            type: 'error',
+            ifShow: () => {
+              return adminId.value === 1;
+            },
+            onClick: () => {
+              handleRolledback(record);
+            },
+          },
+          {
+            label: '删除',
+            ifShow: () => {
+              return adminId.value === 1;
+            },
+            type: 'error',
+            onClick: () => {
+              handleRolledback(record);
+            },
+          },
         ],
       });
     },
   });
 
   const loadDataTable = async (res) => {
-    let list = await getConsoleList({ ...formParams, ...params.value, ...res });
-    return list;
+    $Loading.value.show();
+    let tData = await getConsoleList({ ...formParams, ...params.value, ...res });
+    tableData.value = addParams(tData.apps);
+    adminId.value = tData.adminId;
+    $Loading.value.hide();
   };
 
   // const loadChartData = async () => {
@@ -340,57 +367,67 @@
   }
 
   function reloadTable() {
-    actionRef.value.reload();
+    loadDataTable();
   }
 
   const handleSubmit = async (record: Recordable) => {
-    let selectVersion = record.selectVersion || record.list[0].value;
-    let { appid, currversion, appname } = record;
+    let { id, selectVersion, version, name } = record;
     if (!selectVersion) {
       message.warning('版本号不正确！');
       return;
     }
-    if (selectVersion === currversion) {
-      let msg = `服务[${appname}]版本号${currversion}已经上线！`;
+    if (selectVersion === version) {
+      let msg = `服务[${name}]版本号${selectVersion}已经上线！`;
       message.warning(msg);
       return;
     }
-    $Loading.value.show();
-    await publishUpgrade({ id: appid, appname: appname, version: selectVersion });
-    message.success(`服务[${appname}]版本号${selectVersion} 发布成功`);
-    $Loading.value.hide();
-    reloadTable();
+    try {
+      $Loading.value.show();
+      await publishUpgrade({ id, name, version: selectVersion });
+      message.success(`服务[${name}]版本号${selectVersion} 发布成功`);
+      $Loading.value.hide();
+      reloadTable();
+    } catch (error) {
+      $Loading.value.hide();
+    }
   };
 
   // 完成按钮
   const handleDone = async (record: Recordable) => {
-    let { appid, appname } = record;
-    $Loading.value.show();
-    await publishFinish({ id: appid, appname: appname });
-    message.success(`服务[${appname}]完成升级!`);
-    $Loading.value.hide();
-    reloadTable();
+    let { id, version } = record;
+    try {
+      $Loading.value.show();
+      await publishFinish({ id, version });
+      message.success(`服务[${name}]完成升级!`);
+      $Loading.value.hide();
+      reloadTable();
+    } catch (error) {
+      $Loading.value.hide();
+    }
   };
 
   // 请求回滚
-  async function dopublishRollback(data) {
-    $Loading.value.show();
-    await publishRollback(data);
-    message.success(`服务[${data.appname}]回滚成功!`);
-    $Loading.value.hide();
-    reloadTable();
+  async function dopublishRollback(record: Recordable) {
+    try {
+      $Loading.value.show();
+      await publishRollback(record);
+      message.success(`服务[${record.name}]回滚成功!`);
+      $Loading.value.hide();
+    } catch (error) {
+      $Loading.value.hide();
+    }
   }
 
   // 回滚按钮
   const handleRolledback = async (record: Recordable) => {
-    let { appid, appname } = record;
+    let { id, name } = record;
     dialog.info({
       title: '提示',
-      content: `确定要回滚${appname}吗？`,
+      content: `确定要回滚${name}吗？`,
       positiveText: '确定',
       negativeText: '取消',
       onPositiveClick: () => {
-        dopublishRollback({ id: appid, appname: appname });
+        dopublishRollback({ id, name });
       },
       onNegativeClick: () => {},
     });

@@ -1,6 +1,6 @@
 <template>
   <div ref="chartRef">
-    <n-tag type="success">
+    <n-tag type="success" :title="title">
       {{ title }}
       <n-icon size="14">
         <CheckmarkCircle />
