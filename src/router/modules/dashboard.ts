@@ -31,13 +31,23 @@ const routes: Array<RouteRecordRaw> = [
     children: [
       {
         path: 'console',
-        name: `${routeName}_console`,
+        name: `console`,
         meta: {
           title: '主控台',
           // permissions: ['dashboard_console'],
           // affix: true,
         },
         component: () => import('@/views/dashboard/console/console.vue'),
+      },
+      {
+        path: 'addapp/:id?',
+        name: 'addapp',
+        meta: {
+          title: '添加APP',
+          hidden: true,
+          activeMenu: 'console',
+        },
+        component: () => import('@/views/dashboard/console/info.vue'),
       },
       // {
       //   path: 'monitor',

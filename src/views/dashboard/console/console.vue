@@ -217,6 +217,16 @@
               服务列表
             </div>
           </template>
+          <template #toolbar>
+            <n-button type="primary" size="small" @click="addApp">
+              <template #icon>
+                <n-icon>
+                  <PlusOutlined />
+                </n-icon>
+              </template>
+              新建
+            </n-button>
+          </template>
         </BasicTable>
       </n-card>
     </div>
@@ -237,15 +247,15 @@
   import { BasicTable, TableAction } from '@/components/Table';
   // import { BasicForm, useForm } from '@/components/Form/index';
   import {
-    getConsoleList,
+    getPublishList,
     publishUpgrade,
     publishFinish,
     publishRollback,
-    getChartData,
+    publishDelete,
   } from '@/api/dashboard/console';
   import { columns } from './columns';
   import { useRouter } from 'vue-router';
-
+  const router = useRouter();
   const visits = ref<any>({});
   const saleroom = ref<any>({});
   const orderLarge = ref<any>({});
@@ -293,7 +303,7 @@
     width: '320',
     title: '操作',
     key: 'action',
-    fixed: 'right',
+    fixed: false,
     render(record) {
       return h(TableAction as any, {
         style: 'button',
@@ -331,7 +341,7 @@
               return adminId.value === 1;
             },
             onClick: () => {
-              handleRolledback(record);
+              addApp(record);
             },
           },
           {
@@ -341,7 +351,7 @@
             },
             type: 'error',
             onClick: () => {
-              handleRolledback(record);
+              handleDelete(record);
             },
           },
         ],
@@ -351,7 +361,7 @@
 
   const loadDataTable = async (res) => {
     $Loading.value.show();
-    let tData = await getConsoleList({ ...formParams, ...params.value, ...res });
+    let tData = await getPublishList();
     tableData.value = addParams(tData.apps);
     adminId.value = tData.adminId;
     $Loading.value.hide();
@@ -423,14 +433,48 @@
     let { id, name } = record;
     dialog.info({
       title: '提示',
-      content: `确定要回滚${name}吗？`,
+      content: `确定要回滚[${name}]吗？`,
       positiveText: '确定',
       negativeText: '取消',
       onPositiveClick: () => {
-        dopublishRollback({ id, name });
+        dopublishRollback({ id });
       },
       onNegativeClick: () => {},
     });
+  };
+
+  // 请求删除
+  async function dopublishDelete(record) {
+    try {
+      $Loading.value.show();
+      await publishDelete(record);
+      message.success(`服务[${record.name}]删除成功!`);
+      $Loading.value.hide();
+    } catch (error) {
+      $Loading.value.hide();
+    }
+  }
+  // 删除
+  const handleDelete = async (record: Recordable) => {
+    let { id, name } = record;
+    dialog.info({
+      title: '提示',
+      content: `确定要删除[${name}]吗？`,
+      positiveText: '确定',
+      negativeText: '取消',
+      onPositiveClick: () => {
+        dopublishDelete({ id });
+      },
+      onNegativeClick: () => {},
+    });
+  };
+
+  const addApp = (record) => {
+    let params = {};
+    if (record) {
+      params.id = record.id;
+    }
+    router.push({ name: 'addapp', params });
   };
 </script>
 

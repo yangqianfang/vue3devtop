@@ -15,7 +15,7 @@ export function getChartData() {
   });
 }
 //获取主控list
-export function getConsoleList() {
+export function getPublishList() {
   return http.request({
     url: '/publish/list',
     method: 'post',
@@ -55,5 +55,14 @@ export function publishRollback(params) {
     method: 'POST',
     headers: { 'Content-Type': ContentTypeEnum.JSON },
     params,
+  });
+}
+
+//删除
+export function publishDelete(data) {
+  return http.request({
+    url: 'publish/delete',
+    method: 'POST',
+    data,
   });
 }
