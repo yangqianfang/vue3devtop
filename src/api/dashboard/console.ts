@@ -67,11 +67,10 @@ export function publishDelete(data) {
   });
 }
 //获取参数
-export function getConfigParams(data) {
+export function getConfigParams() {
   return http.request({
     url: '/config/params',
     method: 'POST',
-    data,
   });
 }
 

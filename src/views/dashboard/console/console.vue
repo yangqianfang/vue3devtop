@@ -380,6 +380,9 @@
     loadDataTable();
   }
 
+  /* 
+  发布版本
+  */
   const handleSubmit = async (record: Recordable) => {
     let { id, selectVersion, version, name } = record;
     if (!selectVersion) {
@@ -455,16 +458,17 @@
       $Loading.value.hide();
     }
   }
-  // 删除
+
+  // 删除事件
   const handleDelete = async (record: Recordable) => {
     let { id, name } = record;
     dialog.info({
       title: '提示',
-      content: `确定要删除[${name}]吗？`,
+      content: `确定要删除服务[${name}]吗？`,
       positiveText: '确定',
       negativeText: '取消',
       onPositiveClick: () => {
-        dopublishDelete({ id });
+        dopublishDelete({ id, name });
       },
       onNegativeClick: () => {},
     });

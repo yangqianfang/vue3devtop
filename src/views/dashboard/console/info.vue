@@ -51,7 +51,7 @@
             <div style="margin-left: 80px">
               <n-space>
                 <n-button type="primary" @click="formSubmit" :loading="downLoadloading">
-                  添加应用
+                  保存
                 </n-button>
                 <n-button type="default" @click="formCancel"> 取消 </n-button>
               </n-space>
@@ -64,25 +64,20 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, unref, reactive, onMounted, watchEffect } from 'vue';
+  import { ref, unref, reactive, onMounted, computed } from 'vue';
   import { useRouter } from 'vue-router';
-  import { addApp, editApp, getAppInfo, getConfigParams } from '@/api/dashboard/console';
+  import { addApp, getAppInfo, getConfigParams } from '@/api/dashboard/console';
   import { jsonToSelectData, arrToSelectData } from '@/utils/index';
+  import { publicDataStore } from '@/store/modules/publicData';
+
+  const usePublicData = publicDataStore();
   const router = useRouter();
-  const logList = ref<any>([]);
-  const loading = ref(false);
-  const downLoadloading = ref(false);
+  const submitLoading = ref(false);
   const formRef: any = ref(null);
-  console.log(router);
+  const $Loading = window['$Loading'];
   /* 
-  appname: '',
-    apptype: '',
-    appapi: '',
-    appversion: '',
-    appmembers: '',
-    appgit: '',
-    appgroup: '', 
-    */
+    验证规则
+  */
   const rules = {
     appname: {
       required: true,
@@ -120,12 +115,17 @@
       trigger: 'change',
     },
   };
-
+  /* 
+    下拉数据
+  */
   const selectData = reactive({
     typeList: [],
     groupsList: [],
   });
 
+  /* 
+    表单默认值
+  */
   const defaultValueRef = () => ({
     appname: '',
     apptype: null,
@@ -135,28 +135,59 @@
     appgit: '',
     appgroup: null,
   });
-
   let formValue = reactive(defaultValueRef());
 
+  // 获取store中的数据
+  const publicData = computed(() => usePublicData.publicData);
+
   onMounted(async () => {
-    const publicData = await getConfigParams();
-    //  jsonToSelectData, arrToSelectData
-    selectData.typeList = arrToSelectData(publicData.type);
-    selectData.groupsList = jsonToSelectData(publicData.groups);
-    console.log(selectData.groupsList);
+    const { id } = router.currentRoute.value.params;
+    !publicData.value && (await usePublicData.getPublicData());
+    selectData.typeList = arrToSelectData(publicData.value.type);
+    selectData.groupsList = jsonToSelectData(publicData.value.groups);
+    /* 获取单个app信息 */
+    id && getAppByid(id);
   });
 
+  /* 
+    请求单个app信息 
+  */
+  async function getAppByid(id) {
+    try {
+      $Loading.value.show();
+      const info = await getAppInfo({ id });
+      const { app } = info;
+      const form = {
+        id: app.id,
+        appname: app.name,
+        apptype: app.type,
+        appapi: app.api,
+        appversion: app.version,
+        appmembers: app.members,
+        appgit: app.project,
+        appgroup: app.groups,
+      };
+      formValue = Object.assign(unref(formValue), form);
+      $Loading.value.hide();
+    } catch (error) {
+      $Loading.value.hide();
+    }
+  }
+
+  /* 
+    提交表单
+  */
   function formSubmit() {
     formRef.value.validate(async (errors) => {
       if (!errors) {
         const subdata = Object.assign({}, formValue);
-        downLoadloading.value = true;
+        submitLoading.value = true;
         try {
           await addApp(subdata);
-          downLoadloading.value = false;
+          submitLoading.value = false;
           formCancel();
         } catch (error) {
-          downLoadloading.value = false;
+          submitLoading.value = false;
         }
       }
     });
@@ -166,7 +197,7 @@
     // router.back();
   }
 
-  /*   function resetForm() {
+  /*function resetForm() {
     formRef.value.restoreValidation();
     formValue = Object.assign(unref(formValue), defaultValueRef());
   } */
