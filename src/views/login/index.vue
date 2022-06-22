@@ -139,7 +139,6 @@
           console.log(code);
           if (code == ResultEnum.SUCCESS) {
             const toPath = decodeURIComponent((route.query?.redirect || '/') as string);
-            console.log(toPath);
             message.success('登录成功，即将进入系统');
             if (route.name === LOGIN_NAME) {
               router.replace('/');

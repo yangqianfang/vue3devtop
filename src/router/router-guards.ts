@@ -2,7 +2,7 @@ import type { RouteRecordRaw } from 'vue-router';
 import { isNavigationFailure, Router } from 'vue-router';
 import { useUserStoreWidthOut } from '@/store/modules/user';
 import { useAsyncRouteStoreWidthOut } from '@/store/modules/asyncRoute';
-import { ACCESS_TOKEN, ACCESS_COOKIE } from '@/store/mutation-types';
+import { ACCESS_TOKEN } from '@/store/mutation-types';
 import { storage } from '@/utils/Storage';
 import { PageEnum } from '@/enums/pageEnum';
 import { ErrorPageRoute } from '@/router/base';
@@ -65,8 +65,8 @@ export function createRouterGuards(router: Router) {
       20220615 
       暂时不过滤用户菜单路由权限,先 注释
      */
-    const userInfo = await userStore.GetInfo();
-    // const userInfo = []; // 可从后台获取用户菜单权限
+    // const userInfo = await userStore.GetInfo();
+    const userInfo = []; // 可从后台获取用户菜单权限
 
     const routes = await asyncRouteStore.generateRoutes(userInfo);
 

@@ -149,7 +149,7 @@
     },
     setup(props) {
       const userStore = useUserStore();
-      const useLockscreen = useLockscreenStore();
+      // const useLockscreen = useLockscreenStore();
       const message = useMessage();
       const dialog = useDialog();
       const { getNavMode, getNavTheme, getHeaderSetting, getMenuSetting, getCrumbsSetting } =

@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { createStorage } from '@/utils/Storage';
 import { store } from '@/store';
-import { ACCESS_TOKEN, CURRENT_USER, IS_LOCKSCREEN } from '@/store/mutation-types';
+import { ACCESS_TOKEN, CURRENT_USER, IS_LOCKSCREEN, ACCESS_USER } from '@/store/mutation-types';
 import { ResultEnum } from '@/enums/httpEnum';
 
 import { randomString } from '@/utils/index';
@@ -65,8 +65,12 @@ export const useUserStore = defineStore({
         const response = await login(userInfo);
         const ex = 7 * 24 * 60 * 60 * 1000;
         const token = randomString(32);
+        const { data }: any = response;
         this.setToken(token);
         storage.set(ACCESS_TOKEN, token, ex);
+        // storage.set(ACCESS_USER, data, ex);
+        storage.set(CURRENT_USER, data, ex);
+        this.setUserInfo(data);
         /*   const { result, code } = response;
         if (code === ResultEnum.SUCCESS) {
           const ex = 7 * 24 * 60 * 60 * 1000;
@@ -113,16 +117,11 @@ export const useUserStore = defineStore({
       storage.remove(ACCESS_TOKEN);
       storage.remove(CURRENT_USER); */
       // return Promise.resolve('');
-      return new Promise((resolve, reject) => {
-        logout()
-          .then((res) => {
-            storage.remove(ACCESS_TOKEN);
-            resolve(res);
-          })
-          .catch((error) => {
-            reject(error);
-          });
-      });
+      const res = await logout();
+      this.setUserInfo('');
+      storage.remove(ACCESS_TOKEN);
+      storage.remove(CURRENT_USER);
+      return res;
     },
   },
 });
