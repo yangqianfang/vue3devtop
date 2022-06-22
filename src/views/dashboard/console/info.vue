@@ -4,7 +4,7 @@
       <n-grid cols="1 s:1 m:3 l:3 xl:3 2xl:3" responsive="screen">
         <n-grid-item offset="0 s:0 m:1 l:1 xl:1 2xl:1">
           <n-form
-            :label-width="80"
+            :label-width="120"
             :model="formValue"
             :rules="rules"
             label-placement="left"
@@ -18,7 +18,7 @@
               <n-select
                 clearable
                 placeholder="请选择应用类型"
-                :options="appList.list"
+                :options="selectData.typeList"
                 v-model:value="formValue.apptype"
               />
             </n-form-item>
@@ -28,6 +28,10 @@
             <n-form-item label="当前版本" path="appversion">
               <n-input placeholder="输入当前版本" v-model:value="formValue.appversion" />
             </n-form-item>
+            <n-form-item label="Git仓库名称" path="appgit">
+              <n-input placeholder="输入Git仓库名称" v-model:value="formValue.appgit" />
+            </n-form-item>
+
             <n-form-item label="项目成员" path="appmembers">
               <n-input
                 :show-button="true"
@@ -39,20 +43,17 @@
             <n-form-item label="项目分组" path="appgroup">
               <n-select
                 placeholder="请选择项目分组"
-                :options="logList"
-                filterable
-                label-field="name"
-                value-field="number"
-                :loading="loading"
+                :options="selectData.groupsList"
                 v-model:value="formValue.appgroup"
               />
             </n-form-item>
 
             <div style="margin-left: 80px">
               <n-space>
-                <n-button type="primary" @click="formSubmit" :loading="downLoadloading"
-                  >添加应用</n-button
-                >
+                <n-button type="primary" @click="formSubmit" :loading="downLoadloading">
+                  添加应用
+                </n-button>
+                <n-button type="default" @click="formCancel"> 取消 </n-button>
               </n-space>
             </div>
           </n-form>
@@ -64,92 +65,105 @@
 
 <script lang="ts" setup>
   import { ref, unref, reactive, onMounted, watchEffect } from 'vue';
-  import { getAppList, crontabLogList, downLoadLog } from '@/api/log/crontab';
+  import { useRouter } from 'vue-router';
+  import { addApp, editApp, getAppInfo, getConfigParams } from '@/api/dashboard/console';
+  import { jsonToSelectData, arrToSelectData } from '@/utils/index';
+  const router = useRouter();
   const logList = ref<any>([]);
   const loading = ref(false);
   const downLoadloading = ref(false);
   const formRef: any = ref(null);
-  const rules = {
-    appname: {
-      required: true,
-      message: '请选择服务名称',
-      trigger: 'change',
-    },
-    start: {
-      required: true,
-      type: 'number',
-      message: '请输入开始行数字',
-      trigger: ['blur', 'input'],
-    },
-    end: {
-      required: true,
-      type: 'number',
-      message: '请输入结束换行数字',
-      trigger: ['blur', 'input'],
-    },
-
-    filename: {
-      required: true,
-      message: '请选择日志文件',
-      trigger: 'change',
-    },
-  };
-
-  const appList = reactive({
-    list: [],
-  });
-
-  const defaultValueRef = () => ({
-    appname: '',
+  console.log(router);
+  /* 
+  appname: '',
     apptype: '',
     appapi: '',
     appversion: '',
     appmembers: '',
     appgit: '',
-    appgroup: '',
+    appgroup: '', 
+    */
+  const rules = {
+    appname: {
+      required: true,
+      message: '请输入应用名称',
+      trigger: ['blur', 'input'],
+    },
+    apptype: {
+      required: true,
+      message: '请选应用类型',
+      trigger: 'change',
+    },
+    appapi: {
+      required: true,
+      message: '请输入应用api',
+      trigger: ['blur', 'input'],
+    },
+    appversion: {
+      required: true,
+      message: '请输入当前版本',
+      trigger: ['blur', 'input'],
+    },
+    appmembers: {
+      required: true,
+      message: '请输入项目成员',
+      trigger: ['blur', 'input'],
+    },
+    appgit: {
+      required: true,
+      message: '请输入Git仓库名称',
+      trigger: ['blur', 'input'],
+    },
+    appgroup: {
+      required: true,
+      message: '请选择项目分组',
+      trigger: 'change',
+    },
+  };
+
+  const selectData = reactive({
+    typeList: [],
+    groupsList: [],
+  });
+
+  const defaultValueRef = () => ({
+    appname: '',
+    apptype: null,
+    appapi: '',
+    appversion: '',
+    appmembers: '',
+    appgit: '',
+    appgroup: null,
   });
 
   let formValue = reactive(defaultValueRef());
 
   onMounted(async () => {
-    const applist = await getAppList();
-    appList.list = applist;
+    const publicData = await getConfigParams();
+    //  jsonToSelectData, arrToSelectData
+    selectData.typeList = arrToSelectData(publicData.type);
+    selectData.groupsList = jsonToSelectData(publicData.groups);
+    console.log(selectData.groupsList);
   });
-
-  watchEffect(() => {
-    const appname = formValue.appname;
-    if (appname) {
-      getLogsList();
-    } else {
-      logList.value = [];
-    }
-  });
-
-  /*
-    获取日志list 
-  */
-  const getLogsList = async () => {
-    loading.value = true;
-    const loglist = await crontabLogList({ appname: formValue.appname });
-    logList.value = loglist;
-    loading.value = false;
-  };
 
   function formSubmit() {
     formRef.value.validate(async (errors) => {
       if (!errors) {
-        const { appname, filename, start, end } = formValue;
-        const subdata = { appname: appname, filename: filename, start: start, end: end };
+        const subdata = Object.assign({}, formValue);
         downLoadloading.value = true;
         try {
-          const data = await downLoadLog(subdata);
+          await addApp(subdata);
           downLoadloading.value = false;
-          window.location.href = data;
+          formCancel();
         } catch (error) {
           downLoadloading.value = false;
         }
       }
     });
+  }
+  function formCancel() {
+    router.push({ name: 'console' });
+    // router.back();
   }
 
   /*   function resetForm() {

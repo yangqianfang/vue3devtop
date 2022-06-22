@@ -195,7 +195,7 @@
     </n-grid> -->
     <!--访问量 | 流量趋势-->
     <!-- <button @click="chartData = 333">改变chartData</button> -->
-    <VisiTab :chartData="chartData" />
+    <!-- <VisiTab :chartData="chartData" /> -->
     <div class="mt-4">
       <n-card :bordered="false" class="proCard">
         <BasicTable
@@ -450,6 +450,7 @@
       await publishDelete(record);
       message.success(`服务[${record.name}]删除成功!`);
       $Loading.value.hide();
+      reloadTable();
     } catch (error) {
       $Loading.value.hide();
     }
@@ -469,11 +470,9 @@
     });
   };
 
+  // 跳转至添加页面
   const addApp = (record) => {
-    let params = {};
-    if (record) {
-      params.id = record.id;
-    }
+    let params = record.id ? { id: record.id } : {};
     router.push({ name: 'addapp', params });
   };
 </script>

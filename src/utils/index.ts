@@ -232,3 +232,14 @@ export function arrToSelectData(list) {
   });
   return newList;
 }
+
+/* 
+  {a:"bb",b:"eee"} =>[{label:a,value:a}]
+*/
+export function jsonToSelectData(json) {
+  const newList: any = [];
+  for (const s in json) {
+    newList.push({ label: json[s], value: s });
+  }
+  return newList;
+}

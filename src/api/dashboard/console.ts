@@ -61,7 +61,42 @@ export function publishRollback(params) {
 //删除
 export function publishDelete(data) {
   return http.request({
-    url: 'publish/delete',
+    url: '/publish/delete',
+    method: 'POST',
+    data,
+  });
+}
+//获取参数
+export function getConfigParams(data) {
+  return http.request({
+    url: '/config/params',
+    method: 'POST',
+    data,
+  });
+}
+
+//新增app
+export function addApp(data) {
+  return http.request({
+    url: data.id ? '/publish/save' : '/publish/insert',
+    method: 'POST',
+    data,
+  });
+}
+
+//编辑app
+export function editApp(data) {
+  return http.request({
+    url: '/publish/save',
+    method: 'POST',
+    data,
+  });
+}
+
+//获取单个app信息
+export function getAppInfo(data) {
+  return http.request({
+    url: '/publish/get',
     method: 'POST',
     data,
   });

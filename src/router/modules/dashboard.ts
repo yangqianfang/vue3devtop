@@ -3,8 +3,6 @@ import { Layout } from '@/router/constant';
 import { DashboardOutlined } from '@vicons/antd';
 import { renderIcon } from '@/utils/index';
 
-const routeName = 'dashboard';
-
 /**
  * @param name 路由名称, 必须设置,且不能重名
  * @param meta 路由元信息（路由附带扩展信息）
@@ -18,7 +16,7 @@ const routeName = 'dashboard';
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/dashboard',
-    name: routeName,
+    name: 'dashboard',
     redirect: '/dashboard/console',
     component: Layout,
     meta: {

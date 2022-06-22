@@ -17,7 +17,7 @@ export const columns = [
     title: 'Git名称',
     key: 'project',
     align: 'center',
-    width: 100,
+    width: 80,
     render(row) {
       return row.project;
     },
@@ -30,13 +30,13 @@ export const columns = [
     // ifShow: (_column) => {
     //   return true; // 根据业务控制是否显示
     // },
-    width: 100,
+    width: 80,
   },
   {
     title: '升级时间	',
     align: 'center',
     key: 'latest_time',
-    width: 140,
+    width: 160,
     render(row) {
       return moment.utc(row.latest_time).format('YYYY-MM-DD HH:MM:SS');
     },
