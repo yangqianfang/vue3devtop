@@ -17,8 +17,8 @@ export interface BasicPageParams {
  */
 export function getUserInfo() {
   return http.request({
-    url: '/admin_info',
-    method: 'get',
+    url: '/admin/user',
+    method: 'post',
   });
 }
 

@@ -24,6 +24,7 @@ const routes: Array<RouteRecordRaw> = [
       title: '用户管理',
       icon: renderIcon(UsergroupAddOutlined),
       sort: 2,
+      permissions: ['system_user'],
     },
     children: [
       {
@@ -31,8 +32,9 @@ const routes: Array<RouteRecordRaw> = [
         name: 'user-list',
         meta: {
           title: '用户管理',
+          permissions: ['system_user'],
         },
-        component: () => import('@/views/list/basicList/index.vue'),
+        component: () => import('@/views/user/index.vue'),
       },
     ],
   },

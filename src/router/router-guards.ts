@@ -61,12 +61,18 @@ export function createRouterGuards(router: Router) {
       return;
     }
 
-    /*
-      20220615 
-      暂时不过滤用户菜单路由权限,先 注释
-     */
-    // const userInfo = await userStore.GetInfo();
-    const userInfo = []; // 可从后台获取用户菜单权限
+    const userInfo = await userStore.GetInfo();
+    // const userInfo = []; // 可从后台获取用户菜单权限
+    const permissions: any = [];
+
+    // admin 权限显示用户管理
+    if (userInfo.cid === 1) {
+      permissions.push({
+        label: '用户管理',
+        value: 'system_user',
+      });
+    }
+    userInfo.permissions = permissions;
 
     const routes = await asyncRouteStore.generateRoutes(userInfo);
 

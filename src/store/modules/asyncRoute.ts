@@ -105,6 +105,7 @@ export const useAsyncRouteStore = defineStore({
           console.log(error);
         }
       } else {
+        console.log('过滤');
         try {
           //过滤账户是否拥有某一个权限，并将菜单从加载列表移除
           accessedRouters = filter(asyncRoutes, routeFilter);
@@ -113,8 +114,11 @@ export const useAsyncRouteStore = defineStore({
         }
       }
       accessedRouters = accessedRouters.filter(routeFilter);
+
       this.setRouters(accessedRouters);
       this.setMenus(accessedRouters);
+
+      console.log(accessedRouters);
       return toRaw(accessedRouters);
     },
   },

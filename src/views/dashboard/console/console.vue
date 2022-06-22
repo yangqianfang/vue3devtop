@@ -196,6 +196,9 @@
     <!--访问量 | 流量趋势-->
     <!-- <button @click="chartData = 333">改变chartData</button> -->
     <!-- <VisiTab :chartData="chartData" /> -->
+    <!-- <n-card :bordered="false" class="proCard n-data-table-wrapper">
+      <n-data-table :bordered="false" :columns="columns" :data="tableData" :pagination="false" />
+    </n-card> -->
     <div class="mt-4">
       <n-card :bordered="false" class="proCard">
         <BasicTable
