@@ -21,7 +21,7 @@ const routes: Array<RouteRecordRaw> = [
     redirect: '/system/user-list',
     component: Layout,
     meta: {
-      title: '用户管理',
+      title: '系统管理',
       icon: renderIcon(UsergroupAddOutlined),
       sort: 2,
       permissions: ['system_user'],
@@ -35,6 +35,16 @@ const routes: Array<RouteRecordRaw> = [
           permissions: ['system_user'],
         },
         component: () => import('@/views/user/index.vue'),
+      },
+      {
+        path: 'adduser/:id?',
+        name: 'adduser',
+        meta: {
+          title: '添加用户',
+          hidden: true,
+          activeMenu: 'user-list',
+        },
+        component: () => import('@/views/user/add.vue'),
       },
     ],
   },

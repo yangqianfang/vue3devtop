@@ -268,6 +268,7 @@
   const chartData = ref<any>({});
   const tableData = ref<any>([]);
   const adminId = ref();
+
   function addParams(data) {
     data.forEach((element) => {
       element.loading = false;

@@ -1,50 +1,100 @@
 import { h } from 'vue';
-import { NAvatar } from 'naive-ui';
+import { NButton } from 'naive-ui';
+import { RoleEnum } from '@/enums/roleEnum';
+import moment from 'moment';
 
-export const columns = [
-  {
-    title: 'id',
-    key: 'id',
-    width: 100,
-  },
-  {
-    title: '名称',
-    key: 'name',
-    width: 100,
-  },
-  {
-    title: '头像',
-    key: 'avatar',
-    width: 100,
-    render(row) {
-      return h(NAvatar, {
-        size: 48,
-        src: row.avatar,
-      });
+export function getColumns(action) {
+  const { handleEdit, handleEnable, handleDelete } = action;
+  const columns = [
+    {
+      title: '登录名',
+      key: 'username',
+      width: 120,
     },
-  },
-  {
-    title: '地址',
-    key: 'address',
-    auth: ['basic_list'], // 同时根据权限控制是否显示
-    ifShow: (_column) => {
-      return true; // 根据业务控制是否显示
+    {
+      title: '用户昵称',
+      key: 'nickname',
+      width: 120,
     },
-    width: 150,
-  },
-  {
-    title: '开始日期',
-    key: 'beginTime',
-    width: 160,
-  },
-  {
-    title: '结束日期',
-    key: 'endTime',
-    width: 160,
-  },
-  {
-    title: '创建时间',
-    key: 'date',
-    width: 100,
-  },
-];
+    {
+      title: '用户类型',
+      key: 'cid',
+      width: 120,
+      render(row) {
+        return row.cid === RoleEnum.ADMIN ? '超级管理员' : '普通用户';
+      },
+    },
+    {
+      title: '用户状态',
+      key: 'enable',
+      width: 120,
+      render(row) {
+        return row.enable === 1 ? '启用' : '禁用';
+      },
+    },
+    {
+      title: '注册时间	',
+      key: 'created_time',
+      width: 160,
+      render(row) {
+        return moment.utc(row.created_time).format('YYYY-MM-DD HH:MM:SS');
+      },
+    },
+    {
+      title: '更新时间',
+      key: 'updated_time',
+      width: 160,
+      render(row) {
+        return moment.utc(row.updated_time).format('YYYY-MM-DD HH:MM:SS');
+      },
+    },
+    {
+      title: '操作',
+      key: 'actions',
+      render(row) {
+        const buttonType = row.enable === 1 ? 'warning' : 'success';
+        const buttonText = row.enable === 1 ? '禁用' : '启用';
+        return h(
+          'div',
+          { class: 'button-wrap' },
+          {
+            default: () => [
+              h(
+                NButton,
+                {
+                  strong: true,
+                  type: 'primary',
+                  size: 'small',
+                  onClick: () => handleEdit(row),
+                },
+                { default: () => '编辑' }
+              ),
+              h(
+                NButton,
+                {
+                  strong: true,
+                  type: buttonType,
+                  size: 'small',
+                  onClick: () => handleEnable(row),
+                },
+                { default: () => buttonText }
+              ),
+              h(
+                NButton,
+                {
+                  strong: true,
+                  type: 'error',
+                  size: 'small',
+                  onClick: () => handleDelete(row),
+                },
+                { default: () => '删除' }
+              ),
+            ],
+          }
+        );
+      },
+    },
+  ];
+
+  return columns;
+}

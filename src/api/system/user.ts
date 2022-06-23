@@ -3,7 +3,7 @@ import { http } from '@/utils/http/axios';
 export interface BasicResponseModel<T = any> {
   code: number;
   message: string;
-  result: T;
+  data: T;
 }
 
 export interface BasicPageParams {
@@ -31,22 +31,6 @@ export function login(params) {
       url: '/login/verify',
       method: 'POST',
       data: params,
-    },
-    {
-      isTransformResponse: false,
-    }
-  );
-}
-
-/**
- * @description: 用户修改密码
- */
-export function changePassword(params, uid) {
-  return http.request(
-    {
-      url: `/user/u${uid}/changepw`,
-      method: 'POST',
-      params,
     },
     {
       isTransformResponse: false,

@@ -1,66 +1,42 @@
 <template>
-  <n-card :bordered="false" class="proCard">
-    <div class="table-toolbar">
-      <div class="list-title">
-        <n-icon size="18">
-          <UnorderedListOutlined />
-        </n-icon>
-        用户列表
+  <div>
+    <n-card :bordered="false" class="proCard">
+      <div class="table-toolbar">
+        <div class="list-title">
+          <n-icon size="18">
+            <UnorderedListOutlined />
+          </n-icon>
+          用户管理
+        </div>
+        <div class="list-button">
+          <n-button type="primary" size="small" @click="handleEdit">
+            <template #icon>
+              <n-icon>
+                <PlusOutlined />
+              </n-icon>
+            </template>
+            新建
+          </n-button>
+          <n-button type="primary" size="small" @click="loadDataTable">
+            <template #icon>
+              <n-icon>
+                <ReloadOutlined />
+              </n-icon>
+            </template>
+            刷新
+          </n-button>
+        </div>
       </div>
-      <div class="list-button">
-        <n-button type="primary" size="small" @click="addTable">
-          <template #icon>
-            <n-icon>
-              <PlusOutlined />
-            </n-icon>
-          </template>
-          新建
-        </n-button>
-        <n-button type="primary" size="small" @click="addTable">
-          <template #icon>
-            <n-icon>
-              <ReloadOutlined />
-            </n-icon>
-          </template>
-          刷新
-        </n-button>
+      <div class="table-wrap">
+        <n-data-table
+          :bordered="false"
+          :columns="columns"
+          :data="tableData"
+          striped
+          :pagination="false"
+        />
       </div>
-    </div>
-    <div class="table-wrap">
-      <n-data-table
-        :bordered="false"
-        :columns="columns2"
-        :data="data"
-        striped
-        :pagination="false"
-      />
-    </div>
-  </n-card>
-  <n-card :bordered="false" class="proCard">
-    <BasicTable
-      :columns="columns"
-      :request="loadDataTable"
-      :row-key="(row) => row.id"
-      ref="actionRef"
-      :actionColumn="actionColumn"
-      @update:checked-row-keys="onCheckedRow"
-      :scroll-x="1090"
-    >
-      <template #tableTitle>
-        <n-button type="primary" @click="addTable">
-          <template #icon>
-            <n-icon>
-              <PlusOutlined />
-            </n-icon>
-          </template>
-          新建
-        </n-button>
-      </template>
-
-      <template #toolbar>
-        <n-button type="primary" @click="reloadTable">刷新数据</n-button>
-      </template>
-    </BasicTable>
+    </n-card>
 
     <n-modal v-model:show="showModal" :show-icon="false" preset="dialog" title="新建">
       <n-form
@@ -89,332 +65,89 @@
         </n-space>
       </template>
     </n-modal>
-  </n-card>
+  </div>
 </template>
 
 <script lang="ts" setup>
-  import { h, reactive, ref } from 'vue';
-  import { useMessage, NButton } from 'naive-ui';
-  import { BasicTable, TableAction } from '@/components/Table';
-  import { BasicForm, useForm } from '@/components/Form/index';
-  import { getTableList } from '@/api/table/list';
-  import { columns } from './columns';
+  import { ref, onMounted } from 'vue';
+  import { NButton, useDialog } from 'naive-ui';
+  import { getUserList, deleteUser, enableUser } from '@/api/system/userlist';
+  import { getColumns } from './columns';
   import { UnorderedListOutlined, PlusOutlined, ReloadOutlined } from '@vicons/antd';
   import { useRouter } from 'vue-router';
-
-  const columns2 = [
-    {
-      title: 'No',
-      key: 'no',
-    },
-    {
-      title: 'Title',
-      key: 'title',
-    },
-    {
-      title: 'Length',
-      key: 'length',
-    },
-    {
-      title: 'Action',
-      key: 'actions',
-      render(row) {
-        return h(
-          NButton,
-          {
-            strong: true,
-            tertiary: true,
-            size: 'small',
-            onClick: () => play(row),
-          },
-          { default: () => 'Play' }
-        );
-      },
-    },
-  ];
-
-  const data = [
-    { no: 3, title: 'Wonderwall', length: '4:18' },
-    { no: 4, title: "Don't Look Back in Anger", length: '4:48' },
-    { no: 12, title: 'Champagne Supernova', length: '7:27' },
-  ];
-
-  // const columns2 = createColumns({
-  //   play(row: Song) {
-  //     message.info(`Play ${row.title}`);
-  //   },
-  // });
-
-  const rules = {
-    name: {
-      required: true,
-      trigger: ['blur', 'input'],
-      message: '请输入名称',
-    },
-    address: {
-      required: true,
-      trigger: ['blur', 'input'],
-      message: '请输入地址',
-    },
-    date: {
-      type: 'number',
-      required: true,
-      trigger: ['blur', 'change'],
-      message: '请选择日期',
-    },
-  };
-
-  const schemas = [
-    {
-      field: 'name',
-      labelMessage: '这是一个提示',
-      component: 'NInput',
-      label: '姓名',
-      componentProps: {
-        placeholder: '请输入姓名',
-        onInput: (e: any) => {
-          console.log(e);
-        },
-      },
-      rules: [{ required: true, message: '请输入姓名', trigger: ['blur'] }],
-    },
-    {
-      field: 'mobile',
-      component: 'NInputNumber',
-      label: '手机',
-      componentProps: {
-        placeholder: '请输入手机号码',
-        showButton: false,
-        onInput: (e: any) => {
-          console.log(e);
-        },
-      },
-    },
-    {
-      field: 'type',
-      component: 'NSelect',
-      label: '类型',
-      componentProps: {
-        placeholder: '请选择类型',
-        options: [
-          {
-            label: '舒适性',
-            value: 1,
-          },
-          {
-            label: '经济性',
-            value: 2,
-          },
-        ],
-        onUpdateValue: (e: any) => {
-          console.log(e);
-        },
-      },
-    },
-    {
-      field: 'makeDate',
-      component: 'NDatePicker',
-      label: '预约时间',
-      defaultValue: 1183135260000,
-      componentProps: {
-        type: 'date',
-        clearable: true,
-        onUpdateValue: (e: any) => {
-          console.log(e);
-        },
-      },
-    },
-    {
-      field: 'makeTime',
-      component: 'NTimePicker',
-      label: '停留时间',
-      componentProps: {
-        clearable: true,
-        onUpdateValue: (e: any) => {
-          console.log(e);
-        },
-      },
-    },
-    {
-      field: 'status',
-      label: '状态',
-      //插槽
-      slot: 'statusSlot',
-    },
-    {
-      field: 'makeProject',
-      component: 'NCheckbox',
-      label: '预约项目',
-      componentProps: {
-        placeholder: '请选择预约项目',
-        options: [
-          {
-            label: '种牙',
-            value: 1,
-          },
-          {
-            label: '补牙',
-            value: 2,
-          },
-          {
-            label: '根管',
-            value: 3,
-          },
-        ],
-        onUpdateChecked: (e: any) => {
-          console.log(e);
-        },
-      },
-    },
-    {
-      field: 'makeSource',
-      component: 'NRadioGroup',
-      label: '来源',
-      componentProps: {
-        options: [
-          {
-            label: '网上',
-            value: 1,
-          },
-          {
-            label: '门店',
-            value: 2,
-          },
-        ],
-        onUpdateChecked: (e: any) => {
-          console.log(e);
-        },
-      },
-    },
-  ];
-
+  const $Loading = window['$Loading'];
+  const columns = getColumns({ handleEdit, handleEnable, handleDelete });
+  const tableData = ref([]);
   const router = useRouter();
+  const dialog = useDialog();
   const formRef: any = ref(null);
-  const message = useMessage();
-  const actionRef = ref();
-
   const showModal = ref(false);
   const formBtnLoading = ref(false);
-  const formParams = reactive({
-    name: '',
-    address: '',
-    date: null,
+
+  onMounted(async () => {
+    loadDataTable();
   });
 
-  const params = ref({
-    pageSize: 5,
-    name: 'xiaoMa',
-  });
-
-  const actionColumn = reactive({
-    width: 220,
-    title: '操作',
-    key: 'action',
-    fixed: 'right',
-    render(record) {
-      return h(TableAction as any, {
-        style: 'button',
-        actions: [
-          {
-            label: '删除',
-            icon: 'ic:outline-delete-outline',
-            onClick: handleDelete.bind(null, record),
-            // 根据业务控制是否显示 isShow 和 auth 是并且关系
-            ifShow: () => {
-              return true;
-            },
-            // 根据权限控制是否显示: 有权限，会显示，支持多个
-            auth: ['basic_list'],
-          },
-          {
-            label: '编辑',
-            onClick: handleEdit.bind(null, record),
-            ifShow: () => {
-              return true;
-            },
-            auth: ['basic_list'],
-          },
-        ],
-        dropDownActions: [
-          {
-            label: '启用',
-            key: 'enabled',
-            // 根据业务控制是否显示: 非enable状态的不显示启用按钮
-            ifShow: () => {
-              return true;
-            },
-          },
-          {
-            label: '禁用',
-            key: 'disabled',
-            ifShow: () => {
-              return true;
-            },
-          },
-        ],
-        select: (key) => {
-          message.info(`您点击了，${key} 按钮`);
-        },
-      });
-    },
-  });
-
-  const [register, {}] = useForm({
-    gridProps: { cols: '1 s:1 m:2 l:3 xl:4 2xl:4' },
-    labelWidth: 80,
-    schemas,
-  });
-
-  function addTable() {
-    showModal.value = true;
-  }
-
-  const loadDataTable = async (res) => {
-    return await getTableList({ ...formParams, ...params.value, ...res });
+  const loadDataTable = async () => {
+    try {
+      $Loading.value.show();
+      let res = await getUserList();
+      tableData.value = res.list;
+      $Loading.value.hide();
+    } catch (error) {
+      $Loading.value.hide();
+    }
   };
 
-  function onCheckedRow(rowKeys) {
-    console.log(rowKeys);
-  }
+  // 启用禁用
+  function handleEnable(record: Recordable) {
+    const { id, nickname, enable } = record;
+    const text = enable === 1 ? '禁用' : '启用';
 
-  function reloadTable() {
-    actionRef.value.reload();
-  }
-
-  function confirmForm(e) {
-    e.preventDefault();
-    formBtnLoading.value = true;
-    formRef.value.validate((errors) => {
-      if (!errors) {
-        message.success('新建成功');
-        setTimeout(() => {
-          showModal.value = false;
-          reloadTable();
-        });
-      } else {
-        message.error('请填写完整信息');
-      }
-      formBtnLoading.value = false;
+    dialog.info({
+      title: '提示',
+      content: `确定要${text}[${nickname}]吗？`,
+      positiveText: '确定',
+      negativeText: '取消',
+      onPositiveClick: async () => {
+        try {
+          $Loading.value.show();
+          await enableUser({ id });
+          loadDataTable();
+          $Loading.value.hide();
+        } catch (error) {
+          $Loading.value.hide();
+        }
+      },
+      onNegativeClick: () => {},
     });
   }
 
-  function handleEdit(record: Recordable) {
-    console.log('点击了编辑', record);
-    router.push({ name: 'basic-info', params: { id: record.id } });
-  }
-
+  // 删除
   function handleDelete(record: Recordable) {
-    console.log('点击了删除', record);
-    message.info('点击了删除');
+    const { id, nickname } = record;
+    dialog.info({
+      title: '提示',
+      content: `确定要删除[${nickname}]吗？`,
+      positiveText: '确定',
+      negativeText: '取消',
+      onPositiveClick: async () => {
+        try {
+          $Loading.value.show();
+          await deleteUser({ id });
+          loadDataTable();
+          $Loading.value.hide();
+        } catch (error) {
+          $Loading.value.hide();
+        }
+      },
+      onNegativeClick: () => {},
+    });
   }
 
-  function handleSubmit(values: Recordable) {
-    console.log(values);
-    reloadTable();
-  }
-
-  function handleReset(values: Recordable) {
-    console.log(values);
+  // 编辑
+  function handleEdit(row) {
+    router.push({ name: 'adduser', params: { id: row.id || '' } });
   }
 </script>
 
@@ -436,6 +169,12 @@
     font-weight: bold;
   }
   .list-button {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: flex-start;
+    gap: 8px 12px;
+  }
+  :deep(.button-wrap) {
     display: flex;
     flex-flow: row wrap;
     justify-content: flex-start;

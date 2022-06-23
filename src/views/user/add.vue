@@ -11,43 +11,49 @@
             ref="formRef"
             class="py-8"
           >
-            <n-form-item label="应用名称" path="appname">
-              <n-input placeholder="输入应用名称" v-model:value="formValue.appname" />
-            </n-form-item>
-            <n-form-item label="应用类型" path="apptype">
-              <n-select
-                clearable
-                placeholder="请选择应用类型"
-                :options="selectData.typeList"
-                v-model:value="formValue.apptype"
-              />
-            </n-form-item>
-            <n-form-item label="应用开放API" path="appapi">
-              <n-input placeholder="输入应用开放API" v-model:value="formValue.appapi" />
-            </n-form-item>
-            <n-form-item label="当前版本" path="appversion">
-              <n-input placeholder="输入当前版本" v-model:value="formValue.appversion" />
-            </n-form-item>
-            <n-form-item label="Git仓库名称" path="appgit">
-              <n-input placeholder="输入Git仓库名称" v-model:value="formValue.appgit" />
+            <n-form-item label="登录名称" path="username">
+              <n-input placeholder="输入登录名称" v-model:value="formValue.username" />
             </n-form-item>
 
-            <n-form-item label="项目成员" path="appmembers">
+            <n-form-item label="真实姓名" path="nickname">
+              <n-input placeholder="输入真实姓名" v-model:value="formValue.nickname" />
+            </n-form-item>
+            <n-form-item label="用户密码" path="password">
               <n-input
-                :show-button="true"
-                placeholder="输入项目成员(英文逗号,分隔)"
-                v-model:value="formValue.appmembers"
+                placeholder="输入用户密码"
+                type="password"
+                show-password-on="click"
+                autocomplete
+                v-model:value="formValue.password"
               />
             </n-form-item>
+            <n-form-item label="可发布项目" path="publish">
+              <n-checkbox-group v-model:value="formValue.publish">
+                <n-space item-style="display: flex;">
+                  <n-checkbox
+                    :value="item"
+                    :label="item"
+                    v-for="(item, index) in publishList"
+                    :key="index"
+                  />
+                </n-space>
+              </n-checkbox-group>
+            </n-form-item>
 
-            <n-form-item label="项目分组" path="appgroup">
+            <n-form-item label="用户权限" path="cid">
               <n-select
-                placeholder="请选择项目分组"
-                :options="selectData.groupsList"
-                v-model:value="formValue.appgroup"
+                placeholder="请选择用户权限"
+                :options="roleList"
+                v-model:value="formValue.cid"
               />
             </n-form-item>
-
+            <n-form-item label="用户状态" path="enable">
+              <n-select
+                placeholder="请选择用户状态"
+                :options="enableList"
+                v-model:value="formValue.enable"
+              />
+            </n-form-item>
             <div style="margin-left: 80px">
               <n-space>
                 <n-button type="primary" @click="formSubmit" :loading="submitLoading">
@@ -66,37 +72,55 @@
 <script lang="ts" setup>
   import { ref, unref, reactive, onMounted, computed } from 'vue';
   import { useRouter } from 'vue-router';
-  import { addApp, getAppInfo } from '@/api/dashboard/console';
-  import { jsonToSelectData, arrToSelectData } from '@/utils/index';
+  import { getUserInfo, saveUser } from '@/api/system/userlist';
   import { publicDataStore } from '@/store/modules/publicData';
 
   const usePublicData = publicDataStore();
   const router = useRouter();
   const submitLoading = ref(false);
   const formRef: any = ref(null);
+
+  const publishList = ref([]);
   const $Loading = window['$Loading'];
+  const roleList = [
+    {
+      label: '超级管理员',
+      value: '1',
+    },
+    {
+      label: '普通用户',
+      value: '2',
+    },
+  ];
+  const enableList = [
+    {
+      label: '启用',
+      value: '1',
+    },
+    {
+      label: '禁用',
+      value: '0',
+    },
+  ];
   /* 
     验证规则
   */
+
   const rules = {
-    appname: {
+    username: {
       required: true,
-      message: '请输入应用名称',
+      message: '请输入登录名称',
       trigger: ['blur', 'input'],
     },
-    apptype: {
+
+    nickname: {
       required: true,
-      message: '请选应用类型',
-      trigger: 'change',
-    },
-    appapi: {
-      required: true,
-      message: '请输入应用api',
+      message: '请输入真实姓名',
       trigger: ['blur', 'input'],
     },
-    appversion: {
+    password: {
       required: true,
-      message: '请输入当前版本',
+      message: '请输入用户密码',
       trigger: ['blur', 'input'],
     },
     appmembers: {
@@ -104,36 +128,24 @@
       message: '请输入项目成员',
       trigger: ['blur', 'input'],
     },
-    appgit: {
+    publish: {
+      type: 'array',
       required: true,
-      message: '请输入Git仓库名称',
-      trigger: ['blur', 'input'],
-    },
-    appgroup: {
-      required: true,
-      message: '请选择项目分组',
-      trigger: 'change',
+      message: '请输勾选可发布项目',
+      trigger: ['change'],
     },
   };
-  /* 
-    下拉数据
-  */
-  const selectData = reactive({
-    typeList: [],
-    groupsList: [],
-  });
 
   /* 
     表单默认值
   */
   const defaultValueRef = () => ({
-    appname: '',
-    apptype: null,
-    appapi: '',
-    appversion: '',
-    appmembers: '',
-    appgit: '',
-    appgroup: null,
+    username: '',
+    nickname: '',
+    password: '',
+    cid: '1',
+    enable: '1',
+    publish: [],
   });
   let formValue = reactive(defaultValueRef());
 
@@ -143,29 +155,36 @@
   onMounted(async () => {
     const { id } = router.currentRoute.value.params;
     !publicData.value && (await usePublicData.getPublicData());
-    selectData.typeList = arrToSelectData(publicData.value.type);
-    selectData.groupsList = jsonToSelectData(publicData.value.groups);
+    publishList.value = publicData.value.enables;
+
     /* 获取单个app信息 */
-    id && getAppByid(id);
+    id && getUserByid(id);
   });
 
   /* 
     请求单个app信息 
   */
-  async function getAppByid(id) {
+  async function getUserByid(id) {
     try {
       $Loading.value.show();
-      const info = await getAppInfo({ id });
-      const { app } = info;
+      const info = await getUserInfo({ id });
+      const { user } = info;
+      const publish = user.publish;
+      let viewPublish = publish.split('@') || [];
+      if (publish === 'all') {
+        viewPublish = publishList.value;
+      }
+
+      console.log(viewPublish);
+
       const form = {
-        id: app.id,
-        appname: app.name,
-        apptype: app.type,
-        appapi: app.api,
-        appversion: app.version,
-        appmembers: app.members,
-        appgit: app.project,
-        appgroup: app.groups,
+        id: user.id,
+        username: user.username,
+        nickname: user.nickname,
+        password: '',
+        cid: String(user.cid),
+        enable: String(user.enable),
+        publish: viewPublish,
       };
       formValue = Object.assign(unref(formValue), form);
       $Loading.value.hide();
@@ -181,9 +200,10 @@
     formRef.value.validate(async (errors) => {
       if (!errors) {
         const subdata = Object.assign({}, formValue);
+        subdata.publish = subdata.publish.join('@');
         submitLoading.value = true;
         try {
-          await addApp(subdata);
+          await saveUser(subdata);
           submitLoading.value = false;
           formCancel();
         } catch (error) {
@@ -193,7 +213,7 @@
     });
   }
   function formCancel() {
-    router.push({ name: 'console' });
+    router.push({ name: 'user-list' });
     // router.back();
   }
 
