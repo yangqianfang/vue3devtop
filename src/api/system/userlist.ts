@@ -37,7 +37,7 @@ export function getUserInfo(data) {
  */
 export function saveUser(data) {
   return http.request({
-    url: '/admin/add',
+    url: data.id ? '/admin/save' : '/admin/insert',
     method: 'POST',
     data,
   });

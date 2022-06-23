@@ -77,6 +77,7 @@
 
   const usePublicData = publicDataStore();
   const router = useRouter();
+
   const submitLoading = ref(false);
   const formRef: any = ref(null);
 
@@ -154,6 +155,11 @@
 
   onMounted(async () => {
     const { id } = router.currentRoute.value.params;
+    const title = id ? '编辑用户' : '添加用户';
+    router.currentRoute.value.matched.title = title;
+    console.log(router.currentRoute);
+    console.log(router.currentRoute.value.meta.title);
+
     !publicData.value && (await usePublicData.getPublicData());
     publishList.value = publicData.value.enables;
 
@@ -174,8 +180,6 @@
       if (publish === 'all') {
         viewPublish = publishList.value;
       }
-
-      console.log(viewPublish);
 
       const form = {
         id: user.id,
