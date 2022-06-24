@@ -39,7 +39,7 @@
               </template>
             </n-input>
           </n-form-item>
-          <n-form-item class="default-color">
+          <!-- <n-form-item class="default-color">
             <div class="flex justify-between">
               <div class="flex-initial">
                 <n-checkbox v-model:checked="autoLogin">自动登录</n-checkbox>
@@ -48,7 +48,7 @@
                 <a href="javascript:">忘记密码</a>
               </div>
             </div>
-          </n-form-item>
+          </n-form-item> -->
           <n-form-item>
             <n-button type="primary" @click="handleSubmit" size="large" :loading="loading" block>
               登录
@@ -90,7 +90,7 @@
   import { useUserStore } from '@/store/modules/user';
   import { useMessage } from 'naive-ui';
   import { ResultEnum } from '@/enums/httpEnum';
-  import { PersonOutline, LockClosedOutline, LogoGithub, LogoFacebook } from '@vicons/ionicons5';
+  import { PersonOutline, LockClosedOutline } from '@vicons/ionicons5';
   import { PageEnum } from '@/enums/pageEnum';
 
   interface FormState {
@@ -101,7 +101,7 @@
   const formRef = ref();
   const message = useMessage();
   const loading = ref(false);
-  const autoLogin = ref(true);
+  // const autoLogin = ref(true);
   const LOGIN_NAME = PageEnum.BASE_LOGIN_NAME;
 
   const formInline = reactive({
@@ -204,5 +204,9 @@
     .page-account-container {
       padding: 32px 0 24px 0;
     }
+  }
+
+  .view-account-top-desc {
+    color: #333;
   }
 </style>
