@@ -26,10 +26,10 @@
             </n-form-item>
             <n-form-item label="用户密码" path="password">
               <n-input
+                autocomplete
                 placeholder="输入用户密码"
                 type="password"
                 show-password-on="click"
-                autocomplete
                 v-model:value="formValue.password"
               />
             </n-form-item>
@@ -161,11 +161,6 @@
 
   onMounted(async () => {
     const { id } = router.currentRoute.value.params;
-    const title = id ? '编辑用户' : '添加用户';
-    router.currentRoute.value.matched.title = title;
-    console.log(router.currentRoute);
-    console.log(router.currentRoute.value.meta.title);
-
     !publicData.value && (await usePublicData.getPublicData());
     publishList.value = publicData.value.enables;
 

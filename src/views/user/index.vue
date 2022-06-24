@@ -15,7 +15,7 @@
             <n-icon size="18">
               <UnorderedListOutlined />
             </n-icon>
-            用户管理
+            用户列表
           </div>
         </template>
         <template #toolbar>

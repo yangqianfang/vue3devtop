@@ -389,7 +389,7 @@
 
   // 完成按钮
   const handleDone = async (record: Recordable) => {
-    let { id, version } = record;
+    let { id, version, name } = record;
     try {
       $Loading.value.show();
       await publishFinish({ id, version });
