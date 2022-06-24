@@ -404,10 +404,12 @@
   // 请求回滚
   async function dopublishRollback(record: Recordable) {
     try {
+      let { id, name } = record;
       $Loading.value.show();
-      await publishRollback(record);
-      message.success(`服务[${record.name}]回滚成功!`);
+      await publishRollback({ id });
+      message.success(`服务[${name}]回滚成功!`);
       $Loading.value.hide();
+      reloadTable();
     } catch (error) {
       $Loading.value.hide();
     }
@@ -415,14 +417,14 @@
 
   // 回滚按钮
   const handleRolledback = async (record: Recordable) => {
-    let { id, name } = record;
+    let { name } = record;
     dialog.info({
       title: '提示',
       content: `确定要回滚[${name}]吗？`,
       positiveText: '确定',
       negativeText: '取消',
       onPositiveClick: () => {
-        dopublishRollback({ id });
+        dopublishRollback(record);
       },
       onNegativeClick: () => {},
     });

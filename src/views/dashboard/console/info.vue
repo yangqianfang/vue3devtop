@@ -73,9 +73,10 @@
   import { addApp, getAppInfo } from '@/api/dashboard/console';
   import { jsonToSelectData, arrToSelectData } from '@/utils/index';
   import { publicDataStore } from '@/store/modules/publicData';
-
+  import { useMessage } from 'naive-ui';
   const usePublicData = publicDataStore();
   const router = useRouter();
+  const message = useMessage();
   const submitLoading = ref(false);
   const formRef: any = ref(null);
   const $Loading = window['$Loading'];
@@ -193,7 +194,11 @@
         try {
           await addApp(subdata);
           submitLoading.value = false;
-          formCancel();
+          if (subdata.id) {
+            message.success(`保存成功！`);
+          } else {
+            formCancel();
+          }
         } catch (error) {
           submitLoading.value = false;
         }

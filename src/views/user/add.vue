@@ -80,13 +80,13 @@
   import { useRouter } from 'vue-router';
   import { getUserInfo, saveUser } from '@/api/system/userlist';
   import { publicDataStore } from '@/store/modules/publicData';
-
+  import { useMessage } from 'naive-ui';
   const usePublicData = publicDataStore();
   const router = useRouter();
   const aid = ref('');
   const submitLoading = ref(false);
   const formRef: any = ref(null);
-
+  const message = useMessage();
   const publishList = ref([]);
   const $Loading = window['$Loading'];
   const roleList = [
@@ -126,7 +126,6 @@
       trigger: ['blur', 'input'],
     },
     password: {
-      required: true,
       message: '请输入用户密码',
       trigger: ['blur', 'input'],
     },
@@ -213,7 +212,11 @@
         try {
           await saveUser(subdata);
           submitLoading.value = false;
-          formCancel();
+          if (subdata.id) {
+            message.success(`保存成功！`);
+          } else {
+            formCancel();
+          }
         } catch (error) {
           submitLoading.value = false;
         }
