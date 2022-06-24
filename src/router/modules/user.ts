@@ -24,6 +24,7 @@ const routes: Array<RouteRecordRaw> = [
       title: '系统管理',
       icon: renderIcon(UsergroupAddOutlined),
       sort: 2,
+      isRoot: true,
       permissions: ['system_user'],
     },
     children: [
@@ -42,6 +43,7 @@ const routes: Array<RouteRecordRaw> = [
         meta: {
           title: '添加用户',
           hidden: true,
+          alwaysShow: false,
           activeMenu: 'user-list',
         },
         component: () => import('@/views/user/add.vue'),

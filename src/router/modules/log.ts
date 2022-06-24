@@ -21,6 +21,7 @@ const routes: Array<RouteRecordRaw> = [
     component: Layout,
     meta: {
       title: '生产日志',
+      hidden: true,
       icon: renderIcon(CloudServerOutlined),
       sort: 2,
     },

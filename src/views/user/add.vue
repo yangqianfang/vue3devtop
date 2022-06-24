@@ -1,6 +1,12 @@
 <template>
   <div>
-    <n-card :bordered="false" class="mt-4 proCard">
+    <n-card
+      :bordered="false"
+      class="mt-4 proCard"
+      content-style="padding-top: 0;padding-bottom: 0;"
+      size="small"
+      :title="aid ? '编辑用户' : '添加用户'"
+    >
       <n-grid cols="1 s:1 m:3 l:3 xl:3 2xl:3" responsive="screen">
         <n-grid-item offset="0 s:0 m:1 l:1 xl:1 2xl:1">
           <n-form
@@ -77,7 +83,7 @@
 
   const usePublicData = publicDataStore();
   const router = useRouter();
-
+  const aid = ref('');
   const submitLoading = ref(false);
   const formRef: any = ref(null);
 
@@ -164,7 +170,10 @@
     publishList.value = publicData.value.enables;
 
     /* 获取单个app信息 */
-    id && getUserByid(id);
+    if (id) {
+      aid.value = id;
+      getUserByid(id);
+    }
   });
 
   /* 

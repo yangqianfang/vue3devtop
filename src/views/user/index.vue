@@ -1,14 +1,24 @@
 <template>
   <div>
     <n-card :bordered="false" class="proCard">
-      <div class="table-toolbar">
-        <div class="list-title">
-          <n-icon size="18">
-            <UnorderedListOutlined />
-          </n-icon>
-          用户管理
-        </div>
-        <div class="list-button">
+      <BasicTable
+        :columns="columns"
+        :dataSource="tableData"
+        :row-key="(row) => row.id"
+        :pagination="false"
+        ref="actionRef"
+        :reloadBt="loadDataTable"
+        :scroll-x="1090"
+      >
+        <template #tableTitle>
+          <div class="list-title">
+            <n-icon size="18">
+              <UnorderedListOutlined />
+            </n-icon>
+            用户管理
+          </div>
+        </template>
+        <template #toolbar>
           <n-button type="primary" size="small" @click="handleEdit">
             <template #icon>
               <n-icon>
@@ -17,17 +27,10 @@
             </template>
             新建
           </n-button>
-          <n-button type="primary" size="small" @click="loadDataTable">
-            <template #icon>
-              <n-icon>
-                <ReloadOutlined />
-              </n-icon>
-            </template>
-            刷新
-          </n-button>
-        </div>
-      </div>
-      <div class="table-wrap">
+        </template>
+      </BasicTable>
+
+      <!-- <div class="table-wrap">
         <n-data-table
           :bordered="false"
           :columns="columns"
@@ -35,54 +38,24 @@
           striped
           :pagination="false"
         />
-      </div>
+      </div> -->
     </n-card>
-
-    <n-modal v-model:show="showModal" :show-icon="false" preset="dialog" title="新建">
-      <n-form
-        :model="formParams"
-        :rules="rules"
-        ref="formRef"
-        label-placement="left"
-        :label-width="80"
-        class="py-4"
-      >
-        <n-form-item label="名称" path="name">
-          <n-input placeholder="请输入名称" v-model:value="formParams.name" />
-        </n-form-item>
-        <n-form-item label="地址" path="address">
-          <n-input type="textarea" placeholder="请输入地址" v-model:value="formParams.address" />
-        </n-form-item>
-        <n-form-item label="日期" path="date">
-          <n-date-picker type="datetime" placeholder="请选择日期" v-model:value="formParams.date" />
-        </n-form-item>
-      </n-form>
-
-      <template #action>
-        <n-space>
-          <n-button @click="() => (showModal = false)">取消</n-button>
-          <n-button type="info" :loading="formBtnLoading" @click="confirmForm">确定</n-button>
-        </n-space>
-      </template>
-    </n-modal>
   </div>
 </template>
 
 <script lang="ts" setup>
   import { ref, onMounted } from 'vue';
   import { NButton, useDialog } from 'naive-ui';
+  import { BasicTable, TableAction } from '@/components/Table';
   import { getUserList, deleteUser, enableUser } from '@/api/system/userlist';
   import { getColumns } from './columns';
-  import { UnorderedListOutlined, PlusOutlined, ReloadOutlined } from '@vicons/antd';
+  import { UnorderedListOutlined, PlusOutlined } from '@vicons/antd';
   import { useRouter } from 'vue-router';
   const $Loading = window['$Loading'];
   const columns = getColumns({ handleEdit, handleEnable, handleDelete });
   const tableData = ref([]);
   const router = useRouter();
   const dialog = useDialog();
-  const formRef: any = ref(null);
-  const showModal = ref(false);
-  const formBtnLoading = ref(false);
 
   onMounted(async () => {
     loadDataTable();

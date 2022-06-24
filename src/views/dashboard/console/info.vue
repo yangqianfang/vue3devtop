@@ -1,6 +1,11 @@
 <template>
   <div>
-    <n-card :bordered="false" class="mt-4 proCard">
+    <n-card
+      content-style="padding-top: 0;padding-bottom: 0;"
+      :bordered="false"
+      size="small"
+      :title="aid ? '编辑服务' : '添加服务'"
+    >
       <n-grid cols="1 s:1 m:3 l:3 xl:3 2xl:3" responsive="screen">
         <n-grid-item offset="0 s:0 m:1 l:1 xl:1 2xl:1">
           <n-form
@@ -9,7 +14,6 @@
             :rules="rules"
             label-placement="left"
             ref="formRef"
-            class="py-8"
           >
             <n-form-item label="应用名称" path="appname">
               <n-input placeholder="输入应用名称" v-model:value="formValue.appname" />
@@ -75,6 +79,7 @@
   const submitLoading = ref(false);
   const formRef: any = ref(null);
   const $Loading = window['$Loading'];
+  const aid = ref('');
   /* 
     验证规则
   */
@@ -146,7 +151,10 @@
     selectData.typeList = arrToSelectData(publicData.value.type);
     selectData.groupsList = jsonToSelectData(publicData.value.groups);
     /* 获取单个app信息 */
-    id && getAppByid(id);
+    if (id) {
+      aid.value = id;
+      getAppByid(id);
+    }
   });
 
   /* 

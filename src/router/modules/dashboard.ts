@@ -22,7 +22,7 @@ const routes: Array<RouteRecordRaw> = [
     meta: {
       title: 'Dashboard',
       icon: renderIcon(DashboardOutlined),
-
+      isRoot: true,
       // permissions: ['dashboard_console', 'dashboard_console', 'dashboard_workplace'],
       sort: 0,
     },
@@ -31,7 +31,7 @@ const routes: Array<RouteRecordRaw> = [
         path: 'console',
         name: `console`,
         meta: {
-          title: '主控台',
+          title: '发布升级',
           // permissions: ['dashboard_console'],
           // affix: true,
         },
@@ -41,7 +41,7 @@ const routes: Array<RouteRecordRaw> = [
         path: 'addapp/:id?',
         name: 'addapp',
         meta: {
-          title: '添加APP',
+          title: '添加服务',
           hidden: true,
           activeMenu: 'console',
         },

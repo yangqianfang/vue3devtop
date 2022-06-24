@@ -237,18 +237,12 @@
 </template>
 <script lang="ts" setup>
   import { ref, onMounted, h, reactive } from 'vue';
-  import { getConsoleInfo } from '@/api/dashboard/console';
+  /*   import { getConsoleInfo } from '@/api/dashboard/console';
   import VisiTab from './components/VisiTab.vue';
-  import { CountTo } from '@/components/CountTo/index';
-  import {
-    CaretUpOutlined,
-    CaretDownOutlined,
-    UnorderedListOutlined,
-    PlusOutlined,
-  } from '@vicons/antd';
+  import { CountTo } from '@/components/CountTo/index'; */
+  import { UnorderedListOutlined, PlusOutlined } from '@vicons/antd';
   import { useMessage, useDialog } from 'naive-ui';
   import { BasicTable, TableAction } from '@/components/Table';
-  // import { BasicForm, useForm } from '@/components/Form/index';
   import {
     getPublishList,
     publishUpgrade,
@@ -258,14 +252,15 @@
   } from '@/api/dashboard/console';
   import { columns } from './columns';
   import { useRouter } from 'vue-router';
-  const router = useRouter();
-  const visits = ref<any>({});
+
+  /*  const visits = ref<any>({});
   const saleroom = ref<any>({});
   const orderLarge = ref<any>({});
   const volume = ref({});
+  const chartData = ref<any>({}); */
+  const router = useRouter();
   const $Loading = window['$Loading'];
   const dialog = useDialog();
-  const chartData = ref<any>({});
   const tableData = ref<any>([]);
   const adminId = ref();
 
@@ -275,7 +270,6 @@
       element.list = [];
       element.selectVersion = element.version;
     });
-    console.log(data);
     return data;
   }
 
@@ -293,16 +287,6 @@
 
   const message = useMessage();
   const actionRef = ref();
-  const formParams = reactive({
-    name: '',
-    address: '',
-    date: null,
-  });
-  const params = ref({
-    pageSize: 5,
-    name: 'xiaoMa',
-  });
-
   const actionColumn = reactive({
     width: '320',
     title: '操作',
@@ -320,7 +304,6 @@
               handleSubmit(record);
             },
             // 根据业务控制是否显示 isShow 和 auth 是并且关系
-
             // 根据权限控制是否显示: 有权限，会显示，支持多个
             // auth: ['basic_list'],
           },
@@ -363,7 +346,7 @@
     },
   });
 
-  const loadDataTable = async (res) => {
+  const loadDataTable = async () => {
     $Loading.value.show();
     let tData = await getPublishList();
     tableData.value = addParams(tData.apps);
@@ -371,11 +354,6 @@
     $Loading.value.hide();
   };
 
-  // const loadChartData = async () => {
-  //   return await getChartData();
-  // };
-
-  // loadChartData();
   function onCheckedRow(rowKeys) {
     console.log(rowKeys);
   }
