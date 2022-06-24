@@ -240,9 +240,9 @@
               router
                 .replace({
                   name: 'Login',
-                  query: {
+                  /*  query: {
                     redirect: route.fullPath,
-                  },
+                  }, */
                 })
                 .finally(() => location.reload());
             });
