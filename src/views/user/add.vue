@@ -179,11 +179,7 @@
       const info = await getUserInfo({ id });
       const { user } = info;
       const publish = user.publish;
-      console.log('publish接收');
-      console.log(publish);
-      let viewPublish = publish.split('@');
-      console.log('publish解析后');
-      console.log(viewPublish);
+      let viewPublish = publish.split('@') || [];
       if (publish === 'all') {
         viewPublish = publishList.value;
       }
